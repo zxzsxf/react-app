@@ -1,24 +1,16 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+// @ts-ignore
+import { Button } from 'zxz-ui'
+import { ReactRemoteComponent } from 'remote-component-loader';
 
 function App() {
+  console.log(ReactRemoteComponent,'ReactRemoteComponent');
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {/* <Button label='test'></Button> */}1
+      <ReactRemoteComponent name='button' version='1.0.0' componentProps={{
+        label: 'test'
+      }}></ReactRemoteComponent>
     </div>
   );
 }
