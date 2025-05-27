@@ -1,15 +1,18 @@
 import React from 'react';
 // @ts-ignore
-import { Button } from 'zxz-ui'
+import { Button } from 'zxz-component'
 import { ReactRemoteComponent } from 'remote-component-loader';
 
 function App() {
   console.log(ReactRemoteComponent,'ReactRemoteComponent');
   return (
     <div className="App">
-      {/* <Button label='test'></Button> */}1
-      <ReactRemoteComponent name='button' version='1.0.0' componentProps={{
-        label: 'test'
+      1
+      {/* @ts-ignore */}
+      <Button label='test'></Button>
+      {/* @ts-ignore */}
+      <ReactRemoteComponent name='zxz-button' version='1.0.0' componentProps={{
+        label: 'test1'
       }}></ReactRemoteComponent>
     </div>
   );
