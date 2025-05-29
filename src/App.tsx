@@ -11,7 +11,7 @@ function App() {
       {/* @ts-ignore */}
       <Button label='test'></Button>
       {/* @ts-ignore */}
-      <ReactRemoteComponent name='zxz-button' version='1.0.0' componentProps={{
+      <ReactRemoteComponent name='button' version='1.0.0' componentProps={{
         label: 'test1'
       }}></ReactRemoteComponent>
     </div>
