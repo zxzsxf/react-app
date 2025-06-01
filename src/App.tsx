@@ -1,20 +1,20 @@
 import React from 'react';
-// @ts-ignore
-import { Button } from 'zxz-component'
-import { ReactRemoteComponent } from 'remote-component-loader';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import MainLayout from './layouts/MainLayout';
+import TestPage from './pages/TestPage';
+import ConfigPage from './pages/ConfigPage';
 
 function App() {
-  console.log(ReactRemoteComponent,'ReactRemoteComponent');
   return (
-    <div className="App">
-      1
-      {/* @ts-ignore */}
-      <Button label='test'></Button>
-      {/* @ts-ignore */}
-      <ReactRemoteComponent name='button' version='1.0.0' componentProps={{
-        label: 'test1'
-      }}></ReactRemoteComponent>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<MainLayout />}>
+          <Route index element={<Navigate to="/test" replace />} />
+          <Route path="test" element={<TestPage />} />
+          <Route path="config" element={<ConfigPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
