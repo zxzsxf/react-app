@@ -20,14 +20,18 @@ interface ActiveComponents {
 
 const TestPage: React.FC = () => {
   const [activeComponents, setActiveComponents] = useState<ActiveComponents>({});
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  let WINDOW_MICRO_CONFIG = window.microConfig || {};
+  
 
   useEffect(() => {
     const fetchActiveComponents = async () => {
       try {
+        setLoading(true);
         const response = await fetch('http://localhost:4000/active-components');
         const data = await response.json();
+        window.microConfig = data;
         setActiveComponents(data);
       } catch (err) {
         setError('获取远程组件配置失败');
@@ -35,8 +39,11 @@ const TestPage: React.FC = () => {
         setLoading(false);
       }
     };
-
-    fetchActiveComponents();
+    if(!WINDOW_MICRO_CONFIG || Object.keys(WINDOW_MICRO_CONFIG).length === 0) {
+      fetchActiveComponents();
+    } else {
+      setActiveComponents(WINDOW_MICRO_CONFIG);
+    }
   }, []);
 
   return (

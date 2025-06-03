@@ -12,7 +12,7 @@ declare global {
 // 获取组件配置信息
 const fetchComponentsInfo = async () => {
   try {
-    const response = await fetch('http://localhost:4000/components-info');
+    const response = await fetch('http://localhost:4000/active-components');
     const data = await response.json() || {};
     window.microConfig = data;
   } catch (error) {
