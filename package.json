@@ -8,7 +8,7 @@
     "@types/node": "^16.18.113",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
-    "antd": "^5.25.3",
+    "antd": "4.24.0",
     "axios": "^1.9.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

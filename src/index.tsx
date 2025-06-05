@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import 'antd/dist/antd.css'; // 引入 antd 样式
 import App from './App';
 
 // 声明全局window类型

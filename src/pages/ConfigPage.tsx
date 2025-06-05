@@ -71,6 +71,14 @@ const ConfigPage: React.FC = () => {
         expandable={{
           defaultExpandAllRows: true,
         }}
+        bordered
+        size="middle"
+        pagination={{
+          defaultPageSize: 10,
+          showSizeChanger: true,
+          showQuickJumper: true,
+        }}
+        style={{ background: '#fff' }}
       />
     </div>
   );
