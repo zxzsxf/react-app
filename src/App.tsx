@@ -5,6 +5,7 @@ import TestPage from './pages/TestPage';
 import ConfigPage from './pages/ConfigPage';
 import ThemePage from './pages/ThemePage';
 import { ThemeProvider } from './styles/ThemeContext';
+import SchemaPage from './pages/SchemaPage';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             <Route path="test" element={<TestPage />} />
             <Route path="config" element={<ConfigPage />} />
             <Route path="theme" element={<ThemePage />} />
+            <Route path="schema" element={<SchemaPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

@@ -4,6 +4,12 @@
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
+    "@formily/antd": "2.0.0-rc.4",
+    "@formily/core": "2.0.0-rc.4",
+    "@formily/path": "^2.2.14",
+    "@formily/react": "2.0.0-rc.4",
+    "@formily/reactive": "2.0.0-rc.4",
+    "@formily/shared": "^2.1.11",
     "@types/jest": "^27.5.2",
     "@types/node": "^16.18.113",
     "@types/react": "^18.3.11",

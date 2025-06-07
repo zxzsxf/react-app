@@ -17,4 +17,9 @@ export const menuItems = [
       icon: <SettingOutlined />,
       label: <Link to="/theme">主题</Link>,
     },
+    {
+      key: '/schema',
+      icon: <SettingOutlined />,
+      label: <Link to="/schema">h5表单</Link>,
+    },
   ];
