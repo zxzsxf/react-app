@@ -46,7 +46,7 @@ const BaseForm = () => {
   useEffect(() => {
     // 动态导入组件并注册到SchemaField
     setTimeout(() => {
-      SchemaField = registerSchemaField(componentsData || componentsDataDefault)
+      // SchemaField = registerSchemaField(componentsData || componentsDataDefault)
       setComponentsLoaded(true);
     },100)
   }, []);
