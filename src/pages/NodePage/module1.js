@@ -3,5 +3,7 @@ module.exports = {
     console.log('this is module1 function');
    },
 }
-var a = 1;
+var moduleValue1 = 1;
+console.log(moduleValue1, 'moduleValue1');
+moduleValue1++;
 console.log('this is module1');
