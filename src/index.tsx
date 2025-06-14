@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import 'antd/dist/antd.css'; // 引入 antd 样式
 import App from './App';
+import { initMicro } from 'remote-component-loader';
 
 // 声明全局window类型
 declare global {
@@ -13,11 +14,12 @@ declare global {
 // 获取组件配置信息
 const fetchComponentsInfo = async () => {
   try {
-    const response = await fetch('http://localhost:4000/active-components');
-    const data = await response.json() || {};
+    const response = await fetch('http://localhost:1001/micro/config/active-components');
+    const responseJson = await response.json() || {};
+    const data = responseJson.data || {};
     window.microConfig = data;
   } catch (error) {
-    console.error('Failed to fetch components info:', error);
+    console.error('获取组件配置信息失败:', error);
     window.microConfig = {};
   } finally {
     console.log('获取组件配置信息完成');
@@ -27,7 +29,7 @@ const fetchComponentsInfo = async () => {
 // 初始化应用
 const initApp = async () => {
   await fetchComponentsInfo();
-  
+  initMicro('http://localhost:1001/micro/components/find', 'test-react-app');
   const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
   );

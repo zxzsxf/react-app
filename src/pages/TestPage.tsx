@@ -29,8 +29,9 @@ const TestPage: React.FC = () => {
     const fetchActiveComponents = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:4000/active-components');
-        const data = await response.json();
+        const response = await fetch('http://localhost:1001/micro/config/active-components');
+        const resJson = await response.json();
+        const data = resJson.data || {};
         window.microConfig = data;
         setActiveComponents(data);
       } catch (err) {

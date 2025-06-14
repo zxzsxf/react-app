@@ -52,8 +52,8 @@ const ConfigPage: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/components-info');
-        setComponentsData(response.data);
+        const response = await axios.get('http://localhost:1001/micro/config/components-info');
+        setComponentsData(response?.data?.data);
       } catch (error) {
         console.error('Failed to fetch components info:', error);
       } finally {
@@ -67,15 +67,15 @@ const ConfigPage: React.FC = () => {
   const handlePublish = async (componentName: string, path: string, version: string) => {
     try {
       setPublishing(prev => ({ ...prev, [`${componentName}-${version}`]: true }));
-      await axios.post('http://localhost:4000/components/publish', {
+      await axios.post('http://localhost:1001/micro/components/publish', {
         componentName,
         path,
         version
       });
       message.success('发布成功');
       // 刷新数据
-      const response = await axios.get('http://localhost:4000/components-info');
-      setComponentsData(response.data);
+      const response = await axios.get('http://localhost:1001/micro/config/components-info');
+      setComponentsData(response?.data?.data);
     } catch (error) {
       console.error('发布失败:', error);
       message.error('发布失败');
