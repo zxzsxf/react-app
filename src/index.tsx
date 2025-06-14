@@ -4,6 +4,13 @@ import 'antd/dist/antd.css'; // 引入 antd 样式
 import App from './App';
 import { initMicro } from 'remote-component-loader';
 
+// 忽略 defaultProps 警告
+const originalError = console.error;
+console.error = (...args) => {
+  if (typeof args[0] === 'string' && args[0].includes('defaultProps')) return;
+  originalError.call(console, ...args);
+};
+
 // 声明全局window类型
 declare global {
   interface Window {
