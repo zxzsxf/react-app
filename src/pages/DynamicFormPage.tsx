@@ -14,10 +14,10 @@ const DynamicFormPage: React.FC = () => {
     setLoading(true);
     setError('');
     setForm(null);
-    listForms().then(index => {
+    listForms('express').then(index => {
       const record = index.find(item => item.placement === 'route' && item.path === pathname);
       if (!record) throw new Error('页面不存在');
-      return getForm(record.formCode).then(stored => {
+      return getForm(record.formCode, 'express').then(stored => {
         if (stored.placement !== 'route' || stored.path !== pathname) throw new Error('表单路由配置不一致');
         setForm(stored);
       });

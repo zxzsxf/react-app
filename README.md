@@ -8,11 +8,17 @@
 
 1. 在 `formflow` 运行 `yarn workspace flowform-cli build` 和 `yarn workspace flowform-pc build`；PC 包有变更时在 `react-app` 运行 `npm run sync:flowform-pc` 并执行 `npm install`。
 2. 在 `react-app` 运行 `node ../formflow/packages/cli/dist/index.cjs.js start`。CLI 必须从业务项目目录启动，才会将表单写入该项目。默认监听 `127.0.0.1:7066`。
-3. 在 `flowform-editor` 运行 `npm run dev`（6575）；在 `react-app` 运行 `npm start`（3000）。
+3. 在 `flowform-editor` 运行 `npm run dev`（6575）；在 `react-app` 设置 `PORT=3001` 后运行 `npm start`。只有从 `http://localhost:3001/form-builder` 打开编辑器才会使用 Express。
 
 打开 `/test`，在“业务页表单区域”创建表单；打开 `/form-builder`，填写名称和 `/forms/` 下的地址来创建独立表单页。Editor 的地址可用 `REACT_APP_FLOWFORM_EDITOR_URL` 覆盖，默认是 `http://127.0.0.1:6575/editor`。若修改 editor 的本地端口，启动 CLI 时也需设置对应的 `FLOWFORM_EDITOR_ORIGIN`。
 
-`public/flowforms` 与 `src/types/ff-types` 是业务项目文件，需要提交。生产部署会从静态文件读取表单，不需要 CLI；静态服务器应将 `/forms/*` 等前端路由回退到 `index.html`。
+`public/flowforms` 与 `src/types/ff-types` 是本地 CLI 调试生成的业务项目文件。`/form-builder` 列表及 `/forms/*` 渲染页面始终从 `zxz-express-server` 读取；业务页内嵌表单沿用原有环境读取逻辑。Express 从空数据库开始，不自动导入本地文件；静态服务器应将 `/forms/*` 等前端路由回退到 `index.html`。
+
+## 线上表单部署
+
+构建 `react-app` 前设置 `REACT_APP_EXPRESS_API_URL` 为浏览器可访问的 Express 根地址，设置 `REACT_APP_FLOWFORM_EDITOR_URL` 为单独部署的编辑器 `/editor` 地址。编辑器构建前设置 `EXPRESS_API_URL` 为同一 Express 根地址，并设置 `FLOWFORM_RETURN_ORIGIN` 为业务应用的 origin（如 `https://app.example.com`），以启用“返回业务页面”。跨域部署时需允许业务应用和编辑器访问 Express；也可以用同源网关转发 `/api/forms`。修改这些构建变量后需重新构建。
+
+`/form-builder` 的“创建表单”按钮及本地 `/test` 的入口只在业务工程的 development 环境显示。编辑器仅在来源为 `http://localhost:3001/form-builder` 时使用 Express；其他来源均使用 CLI。Express 的表单保存接口当前无身份鉴权，页面入口限制不限制直接调用接口。
 
 本地 CLI 提供 `GET /api/forms`、`GET /api/forms/:formCode` 和 `POST /api/forms`。保存请求包含 `formCode`、`title`、`placement`（`inline` 或 `route`）、原始 Formily `schema`；独立页面还需提供 `/forms/` 下的 `path`。保存前会检查路由冲突并生成表单值类型。原有 `/saveAll` 接口仍可使用。
 

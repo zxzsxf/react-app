@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Button } from 'zxz-component'
 import { ReactRemoteComponent } from 'remote-component-loader';
 import FlowFormSlot from '../components/FlowFormSlot';
+import { Link } from 'react-router-dom';
 
 interface ActiveComponent {
   path: string;
@@ -51,6 +52,7 @@ const TestPage: React.FC = () => {
   return (
     <div>
       <h2>组件测试页面</h2>
+      {process.env.NODE_ENV === 'development' && <Link to="/form-builder" style={{ display: 'inline-block', marginBottom: 16 }}>创建表单</Link>}
       <div style={{ marginTop: '20px' }}>
         <h3>本地组件测试</h3>
         {/* @ts-ignore */}

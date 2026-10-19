@@ -10,5 +10,9 @@ export interface F3Ad59A0178C4Props {
    * 联系人
    */
   contact?: string;
+  /**
+   * 输入框
+   */
+  gq6m1mz0m1q?: number;
   [k: string]: unknown;
 }

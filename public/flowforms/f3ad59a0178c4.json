@@ -3,7 +3,7 @@
   "title": "客户登记",
   "placement": "route",
   "path": "/forms/customer",
-  "updatedAt": 1792386908382,
+  "updatedAt": 1792395664069,
   "schema": {
     "type": "object",
     "properties": {
@@ -25,8 +25,24 @@
         "name": "contact",
         "x-designable-id": "9erxck5i4i1",
         "x-index": 0
+      },
+      "gq6m1mz0m1q": {
+        "type": "number",
+        "title": "输入框",
+        "x-decorator": "FormItem",
+        "x-component": "InputNumber",
+        "x-validator": [],
+        "x-component-props": {
+          "size": "normal",
+          "showOperator": true
+        },
+        "x-decorator-props": {
+          "optionalMarkHidden": false
+        },
+        "x-designable-id": "gq6m1mz0m1q",
+        "x-index": 1
       }
     },
-    "x-designable-id": "exy8nm4zs4d"
+    "x-designable-id": "8ofgthyx2j5"
   }
 }

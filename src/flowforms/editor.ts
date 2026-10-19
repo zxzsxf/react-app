@@ -9,7 +9,8 @@ interface EditorTarget {
 }
 
 export const openFormEditor = (target: EditorTarget) => {
-  const base = process.env.REACT_APP_FLOWFORM_EDITOR_URL || 'http://127.0.0.1:6575/editor';
+  const base = process.env.REACT_APP_FLOWFORM_EDITOR_URL || (process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:6575/editor' : '');
+  if (!base) throw new Error('未配置线上表单编辑器地址');
   const url = new URL(base);
   url.searchParams.set('flowformMode', 'project');
   url.searchParams.set('formCode', target.formCode);

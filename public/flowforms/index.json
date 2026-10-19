@@ -1,12 +1,5 @@
 [
   {
-    "formCode": "f3ad59a0178c4",
-    "title": "客户登记",
-    "placement": "route",
-    "path": "/forms/customer",
-    "updatedAt": 1792386908382
-  },
-  {
     "formCode": "testPageMain",
     "title": "业务页表单区域",
     "placement": "inline",
@@ -18,5 +11,12 @@
     "placement": "route",
     "path": "/forms/test1",
     "updatedAt": 1792388971305
+  },
+  {
+    "formCode": "f3ad59a0178c4",
+    "title": "客户登记",
+    "placement": "route",
+    "path": "/forms/customer",
+    "updatedAt": 1792395664069
   }
 ]
