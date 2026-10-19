@@ -1,0 +1,32 @@
+{
+  "formCode": "f3ad59a0178c4",
+  "title": "客户登记",
+  "placement": "route",
+  "path": "/forms/customer",
+  "updatedAt": 1792386908382,
+  "schema": {
+    "type": "object",
+    "properties": {
+      "contact": {
+        "type": "string",
+        "title": "联系人",
+        "x-decorator": "FormItem",
+        "x-component": "Input",
+        "x-validator": [],
+        "x-component-props": {
+          "size": "normal",
+          "styleType": "",
+          "inputStatus": "normal",
+          "chineseLength": 1
+        },
+        "x-decorator-props": {
+          "optionalMarkHidden": false
+        },
+        "name": "contact",
+        "x-designable-id": "9erxck5i4i1",
+        "x-index": 0
+      }
+    },
+    "x-designable-id": "exy8nm4zs4d"
+  }
+}

@@ -1,0 +1,167 @@
+{
+  "formCode": "f3b36acc39442",
+  "title": "test1",
+  "placement": "route",
+  "path": "/forms/test1",
+  "updatedAt": 1792388971305,
+  "schema": {
+    "type": "object",
+    "properties": {
+      "clm7syft5k4": {
+        "type": "string",
+        "title": "输入框",
+        "x-decorator": "FormItem",
+        "x-component": "Input",
+        "x-validator": [],
+        "x-component-props": {
+          "size": "normal",
+          "styleType": "",
+          "inputStatus": "normal",
+          "chineseLength": 1
+        },
+        "x-decorator-props": {
+          "optionalMarkHidden": false
+        },
+        "x-designable-id": "clm7syft5k4",
+        "x-index": 0
+      },
+      "n7x4ezvygzp": {
+        "type": "number",
+        "title": "输入框",
+        "x-decorator": "FormItem",
+        "x-component": "InputNumber",
+        "x-validator": [],
+        "x-component-props": {
+          "size": "normal",
+          "showOperator": true
+        },
+        "x-decorator-props": {
+          "optionalMarkHidden": false
+        },
+        "x-designable-id": "n7x4ezvygzp",
+        "x-index": 1
+      },
+      "3bfvbd39ns2": {
+        "type": "string | number | array",
+        "title": "下拉选框",
+        "x-decorator": "FormItem",
+        "x-component": "Select",
+        "enum": [
+          {
+            "value": 1,
+            "label": "Banana"
+          },
+          {
+            "value": 2,
+            "label": "Watermelon"
+          },
+          {
+            "value": 3,
+            "label": "Strawberry"
+          },
+          {
+            "value": 4,
+            "label": "Orange"
+          },
+          {
+            "value": 5,
+            "label": "Pear"
+          },
+          {
+            "value": 6,
+            "label": "Peach"
+          }
+        ],
+        "x-validator": [],
+        "x-component-props": {
+          "size": "normal",
+          "inputType": "",
+          "suffixIcon": "chevron-down",
+          "showArrow": true,
+          "placement": "bottomLeft"
+        },
+        "x-decorator-props": {
+          "optionalMarkHidden": false
+        },
+        "x-designable-id": "3bfvbd39ns2",
+        "x-index": 2
+      },
+      "13932nhf87n": {
+        "type": "string | number",
+        "title": "单选框组",
+        "x-decorator": "FormItem",
+        "x-component": "RadioGroup",
+        "enum": [
+          {
+            "label": "选项1",
+            "value": 1,
+            "desc": "选项1desc"
+          },
+          {
+            "label": "选项2",
+            "value": 2,
+            "desc": "选项2desc"
+          }
+        ],
+        "x-validator": [],
+        "x-component-props": {
+          "layout": "horizontal",
+          "descLayout": "nextline"
+        },
+        "x-decorator-props": {
+          "optionalMarkHidden": false
+        },
+        "x-designable-id": "13932nhf87n",
+        "x-index": 3
+      },
+      "nuo4qu75dzw": {
+        "type": "boolean",
+        "title": "复选框",
+        "x-decorator": "FormItem",
+        "x-component": "Checkbox",
+        "x-validator": [],
+        "x-component-props": {
+          "label": "我是复选框文案",
+          "desc": "我是复选框文案说明"
+        },
+        "x-decorator-props": {
+          "optionalMarkHidden": false
+        },
+        "x-designable-id": "nuo4qu75dzw",
+        "x-index": 4
+      },
+      "xq40e31lbqc": {
+        "type": "boolean",
+        "title": "复选框",
+        "x-decorator": "FormItem",
+        "x-component": "Checkbox",
+        "x-validator": [],
+        "x-component-props": {
+          "label": "我是复选框文案",
+          "desc": "我是复选框文案说明"
+        },
+        "x-decorator-props": {
+          "optionalMarkHidden": false
+        },
+        "x-designable-id": "xq40e31lbqc",
+        "x-index": 5
+      },
+      "sbd9mzuzh2y": {
+        "type": "string",
+        "title": "日期",
+        "x-decorator": "FormItem",
+        "x-component": "DatePicker",
+        "x-validator": [],
+        "x-component-props": {
+          "normalProps": {}
+        },
+        "x-decorator-props": {
+          "optionalMarkHidden": false
+        },
+        "x-designable-id": "sbd9mzuzh2y",
+        "x-index": 6
+      }
+    },
+    "x-designable-id": "3v9dt2ffuy4"
+  }
+}

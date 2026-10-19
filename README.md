@@ -2,6 +2,20 @@
 
 # Getting Started with Create React App
 
+## PC 低代码表单本地联调
+
+在三个终端中分别启动以下服务（均使用 Node 18.17.1）：
+
+1. 在 `formflow` 运行 `yarn workspace flowform-cli build` 和 `yarn workspace flowform-pc build`；PC 包有变更时在 `react-app` 运行 `npm run sync:flowform-pc` 并执行 `npm install`。
+2. 在 `react-app` 运行 `node ../formflow/packages/cli/dist/index.cjs.js start`。CLI 必须从业务项目目录启动，才会将表单写入该项目。默认监听 `127.0.0.1:7066`。
+3. 在 `flowform-editor` 运行 `npm run dev`（6575）；在 `react-app` 运行 `npm start`（3000）。
+
+打开 `/test`，在“业务页表单区域”创建表单；打开 `/form-builder`，填写名称和 `/forms/` 下的地址来创建独立表单页。Editor 的地址可用 `REACT_APP_FLOWFORM_EDITOR_URL` 覆盖，默认是 `http://127.0.0.1:6575/editor`。若修改 editor 的本地端口，启动 CLI 时也需设置对应的 `FLOWFORM_EDITOR_ORIGIN`。
+
+`public/flowforms` 与 `src/types/ff-types` 是业务项目文件，需要提交。生产部署会从静态文件读取表单，不需要 CLI；静态服务器应将 `/forms/*` 等前端路由回退到 `index.html`。
+
+本地 CLI 提供 `GET /api/forms`、`GET /api/forms/:formCode` 和 `POST /api/forms`。保存请求包含 `formCode`、`title`、`placement`（`inline` 或 `route`）、原始 Formily `schema`；独立页面还需提供 `/forms/` 下的 `path`。保存前会检查路由冲突并生成表单值类型。原有 `/saveAll` 接口仍可使用。
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 // @ts-ignore
 import { Button } from 'zxz-component'
 import { ReactRemoteComponent } from 'remote-component-loader';
+import FlowFormSlot from '../components/FlowFormSlot';
 
 interface ActiveComponent {
   path: string;
@@ -87,8 +88,9 @@ const TestPage: React.FC = () => {
           </div>
         )}
       </div>
+      <FlowFormSlot formCode="testPageMain" title="业务页表单区域" />
     </div>
   );
 };
 
-export default TestPage; 
+export default TestPage;

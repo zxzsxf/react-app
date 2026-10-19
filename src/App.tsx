@@ -6,6 +6,8 @@ import ConfigPage from './pages/ConfigPage';
 import ThemePage from './pages/ThemePage';
 import { ThemeProvider } from './styles/ThemeContext';
 import SchemaPage from './pages/SchemaPage';
+import FormManagerPage from './pages/FormManagerPage';
+import DynamicFormPage from './pages/DynamicFormPage';
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
             <Route path="config" element={<ConfigPage />} />
             <Route path="theme" element={<ThemePage />} />
             <Route path="schema" element={<SchemaPage />} />
+            <Route path="form-builder" element={<FormManagerPage />} />
+            <Route path="forms/*" element={<DynamicFormPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

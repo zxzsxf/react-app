@@ -1,4 +1,4 @@
-import { ExperimentOutlined, SettingOutlined } from '@ant-design/icons';
+import { ExperimentOutlined, SettingOutlined, FormOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 
 export const menuItems = [
@@ -16,6 +16,11 @@ export const menuItems = [
       key: '/theme',
       icon: <SettingOutlined />,
       label: <Link to="/theme">主题</Link>,
+    },
+    {
+      key: '/form-builder',
+      icon: <FormOutlined />,
+      label: <Link to="/form-builder">表单管理</Link>,
     },
     {
       key: '/schema',
