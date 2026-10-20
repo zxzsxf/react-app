@@ -112,6 +112,7 @@ const TemplateWizard: React.FC<{ id: string }> = ({ id }) => {
         version: item.version,
         configVersion: 0,
         displayName: item.manifest.displayName,
+        kind: item.manifest.kind,
         defaultFieldSchema: item.manifest.defaultFieldSchema,
         configSchema: emptySchema(),
         configBindings: {},
@@ -236,7 +237,8 @@ const TemplateWizard: React.FC<{ id: string }> = ({ id }) => {
     manifest: {
       schemaComponent: name,
       displayName: lock.displayName || name,
-      kind: name === 'Card' ? 'container' : 'field',
+      kind: lock.kind || catalog.find((item) => item.manifest.schemaComponent === name)?.manifest.kind ||
+        (name === 'Card' ? 'container' : 'field'),
       defaultFieldSchema: lock.defaultFieldSchema ||
         catalog.find((item) => item.manifest.schemaComponent === name)?.manifest
           .defaultFieldSchema || {

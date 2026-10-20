@@ -210,15 +210,17 @@
   height: 20px;
   padding: 0;
   color: #8c8c8c;
-  border: 1px solid #e3e9f1;
-  border-radius: 50%;
-  background: #fff;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
   font-size: 10px;
 }
 
 .lowcode-editor-node > .lowcode-editor-node-remove:hover,
 .lowcode-editor-node > .lowcode-editor-node-remove:focus {
   color: #595959;
+  background: transparent;
 }
 
 .lowcode-editor-node-content {
@@ -286,4 +288,38 @@
   .lowcode-canvas-toolbar {
     flex-wrap: wrap;
   }
+}
+
+.lowcode-editor-node[draggable="true"] {
+  cursor: grab;
+}
+
+.lowcode-editor-node.is-drop-inside {
+  border-color: #1677ff;
+  background: #e6f4ff;
+  box-shadow: inset 0 0 0 2px #91caff;
+}
+
+.lowcode-editor-node.is-drop-before::before,
+.lowcode-editor-node.is-drop-after::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: #1677ff;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.lowcode-editor-node.is-drop-before::before {
+  top: -7px;
+}
+
+.lowcode-editor-node.is-drop-after::after {
+  bottom: -7px;
+}
+
+.lowcode-phone.is-drop-root .lowcode-phone-screen {
+  box-shadow: inset 0 -3px #1677ff;
 }

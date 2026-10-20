@@ -7,6 +7,7 @@ import { MobileFormRenderer } from 'flowform-mobile';
 import type { MobileFormHandle } from 'flowform-mobile';
 import { ReactRemoteComponent } from 'remote-component-loader';
 import { ComponentLock, SchemaNode } from './api';
+import { SchemaDropTarget } from './schema-drag';
 
 export type { MobileFormHandle };
 export interface LowCodeRendererProps {
@@ -16,9 +17,11 @@ export interface LowCodeRendererProps {
   onSelect?: (path: string) => void;
   selectedPath?: string;
   onRemove?: (path: string) => void;
+  draggable?: boolean;
+  dropTarget?: SchemaDropTarget | null;
   onSubmit?: (values: Record<string, unknown>) => void | Promise<void>;
 }
-const EditorContext = createContext<Pick<LowCodeRendererProps, 'onSelect' | 'selectedPath' | 'onRemove'>>({});
+const EditorContext = createContext<Pick<LowCodeRendererProps, 'onSelect' | 'selectedPath' | 'onRemove' | 'draggable' | 'dropTarget'>>({});
 
 interface EditorSchema extends SchemaNode {
   'x-decorator-props'?: Record<string, unknown>;
@@ -50,6 +53,8 @@ export const LowCodeRenderer: React.FC<LowCodeRendererProps> = ({
   onSelect,
   selectedPath,
   onRemove,
+  draggable,
+  dropTarget,
   onSubmit,
 }) => {
   const componentsData = useMemo(() => {
@@ -77,8 +82,9 @@ export const LowCodeRenderer: React.FC<LowCodeRendererProps> = ({
       const content = Decorator ? <Decorator {...props}>{children}</Decorator> : children;
       return (
         <div
-          className={`lowcode-editor-node${editor.selectedPath === path ? ' is-selected' : ''}`}
+          className={`lowcode-editor-node${editor.selectedPath === path ? ' is-selected' : ''}${editor.dropTarget?.path === path ? ` is-drop-${editor.dropTarget.placement}` : ''}`}
           data-lowcode-path={path}
+          draggable={editor.draggable}
           tabIndex={0}
           aria-label={`选择${label}组件`}
           onClick={(event) => {
@@ -119,7 +125,7 @@ export const LowCodeRenderer: React.FC<LowCodeRendererProps> = ({
     [schema, locks, editing],
   );
   return (
-    <EditorContext.Provider value={{ onSelect, selectedPath, onRemove }}>
+    <EditorContext.Provider value={{ onSelect, selectedPath, onRemove, draggable, dropTarget }}>
       <MobileFormRenderer
         key={editing ? 'editor' : 'preview'}
         ref={formRef}
