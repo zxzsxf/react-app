@@ -131,6 +131,13 @@ test('three steps keep changes local, filter active components, and save the com
     expect.objectContaining({
       id: 'testTemplate',
       title: '测试模板',
+      schema: {
+        type: 'object',
+        properties: {},
+        'x-component-configs': {
+          Input: { schema: { type: 'object', properties: {} }, bindings: {} },
+        },
+      },
       componentLocks: {
         Input: expect.objectContaining({
           remoteName: 'input',
@@ -174,6 +181,13 @@ test('component config applies fields without bindings and hides steps only whil
   expect(api.create).toHaveBeenCalledWith(
     'templates',
     expect.objectContaining({
+      schema: {
+        type: 'object',
+        properties: {},
+        'x-component-configs': {
+          Input: { schema: mockConfigSchema, bindings: {} },
+        },
+      },
       componentLocks: {
         Input: expect.objectContaining({
           configSchema: mockConfigSchema,
@@ -182,4 +196,17 @@ test('component config applies fields without bindings and hides steps only whil
       },
     }),
   );
+  (api.save as jest.Mock).mockImplementation(async (_kind, _id, payload) => ({
+    ...payload,
+    revision: 2,
+  }));
+  await click('完成并保存模板');
+  expect(api.save).toHaveBeenCalledWith('templates', 'testTemplate', expect.objectContaining({
+    revision: 1,
+    schema: expect.objectContaining({
+      'x-component-configs': {
+        Input: { schema: mockConfigSchema, bindings: {} },
+      },
+    }),
+  }));
 });

@@ -30,6 +30,7 @@ import {
   removeTemplateDraft,
 } from '../lowcode/template-draft';
 import LowCodeFormBuilderPage from './LowCodeFormBuilderPage';
+import { withComponentConfigs } from '../lowcode/template-schema';
 import './LowCodeTemplateWizardPage.css';
 
 const emptySchema = (): SchemaNode => ({ type: 'object', properties: {} });
@@ -177,7 +178,7 @@ const TemplateWizard: React.FC<{ id: string }> = ({ id }) => {
     }
   };
 
-  const save = async (publish: boolean) => {
+  const save = async () => {
     if (!doc || operating.current) return;
     operating.current = true;
     setBusy(true);
@@ -186,7 +187,7 @@ const TemplateWizard: React.FC<{ id: string }> = ({ id }) => {
     try {
       const payload = {
         title: doc.title.trim(),
-        schema: doc.schema,
+        schema: withComponentConfigs(doc.schema, doc.componentLocks),
         componentLocks: doc.componentLocks,
         bindings: {},
       };
@@ -199,13 +200,7 @@ const TemplateWizard: React.FC<{ id: string }> = ({ id }) => {
             });
       setDoc(saved);
       removeTemplateDraft(id);
-      if (publish) {
-        const result = await api.publish('templates', id, saved.revision);
-        setDoc({ ...saved, publishedVersion: result.version });
-        setMessage(`模板已保存并发布 v${result.version}`);
-      } else {
-        setMessage('模板已保存');
-      }
+      setMessage('模板已保存');
     } catch (cause) {
       setError((cause as Error).message);
     } finally {
@@ -514,14 +509,9 @@ const TemplateWizard: React.FC<{ id: string }> = ({ id }) => {
               </Button>
             )}
             {step === 2 && (
-              <>
-                <Button type="primary" loading={busy} onClick={() => save(false)}>
-                  完成并保存模板
-                </Button>
-                <Button disabled={busy} onClick={() => save(true)}>
-                  保存并发布模板
-                </Button>
-              </>
+              <Button type="primary" loading={busy} onClick={save}>
+                完成并保存模板
+              </Button>
             )}
           </Space>
         </div>

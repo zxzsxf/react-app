@@ -1,6 +1,7 @@
 export type Role = 'M' | 'B' | 'C';
 export interface User { id: string; username: string; roles: Role[]; csrf: string }
 export interface SchemaNode {
+  'x-component-configs'?: Record<string, { schema: SchemaNode; bindings: Record<string, string> }>;
   'x-index'?: number;
   type: string; title?: string; required?: boolean;
   properties?: Record<string, SchemaNode>;
