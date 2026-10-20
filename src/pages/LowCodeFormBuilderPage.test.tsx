@@ -9,7 +9,24 @@ jest.mock('react-router-dom', () => ({ useParams: () => ({}) }), {
   virtual: true,
 });
 jest.mock('../lowcode/MobileRenderer', () => ({
-  LowCodeRenderer: () => <div>画布</div>,
+  LowCodeRenderer: ({ schema, onSelect, onRemove, selectedPath }: any) => (
+    <div>
+      {Object.keys(schema.properties || {}).map((path) => onSelect ? (
+        <div
+          key={path}
+          data-lowcode-path={path}
+          className={selectedPath === path ? 'is-selected' : ''}
+          onClick={() => onSelect(path)}
+        >
+          组件
+          <button onClick={(event) => {
+            event.stopPropagation();
+            onRemove(path);
+          }}>删除组件</button>
+        </div>
+      ) : <div key={path}>预览组件</div>)}
+    </div>
+  ),
 }));
 jest.mock('../lowcode/api', () => ({
   api: { published: jest.fn(), versioned: jest.fn() },
@@ -80,9 +97,7 @@ test('embedded configuration renders and updates its bound property', async () =
   try {
     await act(async () => root.render(<Wrapper />));
     await act(async () =>
-      Array.from(host.querySelectorAll('button'))
-        .find((button) => button.textContent?.includes('name ·'))!
-        .click(),
+      Simulate.click(host.querySelector('[data-lowcode-path="name"]')!),
     );
     expect(host.textContent).toContain('提示文案');
     const input = host.querySelector('input')!;
@@ -95,6 +110,34 @@ test('embedded configuration renders and updates its bound property', async () =
       latest.schema.properties!.name['x-component-props']!.placeholder,
     ).toBe('新提示');
     expect(latest.schema.properties!.name.title).toBe('姓名');
+    expect(host.querySelector('.is-selected')).not.toBeNull();
+    expect(host.textContent).not.toContain('未保存');
+    expect(host.textContent).not.toContain('上移');
+    expect(host.textContent).not.toContain('下移');
+    expect(host.querySelector('.lowcode-node-list')).toBeNull();
+
+    await act(async () =>
+      Array.from(host.querySelectorAll('button'))
+        .find((button) => button.textContent?.includes('预览'))!
+        .click(),
+    );
+    expect(host.textContent).toContain('预览组件');
+    expect(host.querySelector('[data-lowcode-path]')).toBeNull();
+    expect(latest.schema.properties!.name['x-component-props']!.placeholder).toBe('新提示');
+
+    await act(async () =>
+      Array.from(host.querySelectorAll('button'))
+        .find((button) => button.textContent?.includes('返回编辑'))!
+        .click(),
+    );
+    expect(host.querySelector('.is-selected')).not.toBeNull();
+    await act(async () =>
+      Array.from(host.querySelectorAll('button'))
+        .find((button) => button.textContent?.includes('删除组件'))!
+        .click(),
+    );
+    expect(latest.schema.properties).toEqual({});
+    expect(host.textContent).toContain('点击画布中的组件进行配置');
   } finally {
     act(() => root.unmount());
     host.remove();

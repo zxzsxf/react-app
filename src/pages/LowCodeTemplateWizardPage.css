@@ -5,8 +5,15 @@
 }
 
 .template-wizard-content {
+  display: flex;
+  flex-direction: column;
   flex: 1;
   min-width: 0;
+}
+
+.template-wizard-content > .lowcode-builder-page {
+  flex: 1;
+  min-height: 0;
 }
 
 .template-wizard .template-component-row {

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, Button, Input, Space, Typography } from 'antd';
+import { Alert, Button, Empty, Input, Space, Typography } from 'antd';
+import { AppstoreOutlined, EditOutlined, EyeOutlined, PlusOutlined, SettingOutlined } from '@ant-design/icons';
 import { useParams } from 'react-router-dom';
 import {
   api,
@@ -17,6 +18,7 @@ import {
   Input as SchemaInput,
   Switch,
 } from '@formily/antd';
+import '@formily/antd/dist/antd.css';
 import './LowCodeFormBuilderPage.css';
 
 const clone = <T,>(value: T): T => JSON.parse(JSON.stringify(value));
@@ -83,10 +85,16 @@ const PropertyPanel: React.FC<{
       'overwrite',
     );
   }, [node, config, form]);
-  if (!node) return <div>在手机画布中选择组件</div>;
-  if (!config) return <div>该版本尚无组件配置表单</div>;
+  if (!node) return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="点击画布中的组件进行配置" />;
+  if (!config) return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="该组件暂无配置表单" />;
   return (
-    <SchemaForm form={form} layout="vertical">
+    <SchemaForm
+      form={form}
+      layout="horizontal"
+      labelWidth={80}
+      labelAlign="right"
+      colon
+    >
       <ConfigFields schema={config.schema as any} />
     </SchemaForm>
   );
@@ -110,6 +118,7 @@ const LowCodeFormBuilderPage: React.FC<{ template?: TemplateBuilderProps }> = ({
   };
   const [catalog, setCatalog] = useState<ComponentItem[]>([]);
   const [selected, setSelected] = useState('');
+  const [previewing, setPreviewing] = useState(false);
   const [config, setConfig] = useState<Snapshot | null>(null);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
@@ -124,11 +133,12 @@ const LowCodeFormBuilderPage: React.FC<{ template?: TemplateBuilderProps }> = ({
       .then(setCatalog)
       .catch((cause) => setError(cause.message));
   }, [formCode, template]);
-  const selectedNode = doc ? nodeAt(doc.schema, selected) : undefined;
+  const selectedNode = doc && selected ? nodeAt(doc.schema, selected) : undefined;
   const selectedLock = selectedNode
     ? doc?.componentLocks[selectedNode['x-component'] || '']
     : undefined;
   useEffect(() => {
+    let active = true;
     setConfig(null);
     if (selectedLock?.configSchema) {
       setConfig({
@@ -148,15 +158,21 @@ const LowCodeFormBuilderPage: React.FC<{ template?: TemplateBuilderProps }> = ({
           `${selectedLock.remoteName}:${selectedLock.version}`,
           selectedLock.configVersion,
         )
-        .then(setConfig)
-        .catch((cause) => setError(cause.message));
+        .then((value) => {
+          if (active) setConfig(value);
+        })
+        .catch((cause) => {
+          if (active) setError(cause.message);
+        });
+    return () => {
+      active = false;
+    };
   }, [selectedLock]);
   const change = (mutate: (schema: SchemaNode) => void) => {
     if (!doc) return;
     const schema = clone(doc.schema);
     mutate(schema);
     setDoc({ ...doc, schema });
-    setMessage('未保存');
   };
   const add = async (item: ComponentItem) => {
     if (!doc) return;
@@ -195,28 +211,17 @@ const LowCodeFormBuilderPage: React.FC<{ template?: TemplateBuilderProps }> = ({
       setSelected(
         selectedNode?.['x-component'] === 'Card' ? `${selected}.${key}` : key,
       );
-      setMessage('未保存');
     } catch (cause) {
       setError((cause as Error).message);
     }
   };
-  const remove = () =>
+  const remove = (path: string) =>
     change((schema) => {
-      const parent = parentAt(schema, selected);
-      delete parent.properties?.[parts(selected).slice(-1)[0]];
-      setSelected('');
-    });
-  const move = (offset: number) =>
-    change((schema) => {
-      const parent = parentAt(schema, selected);
-      const entries = Object.entries(parent.properties || {});
-      const index = entries.findIndex(
-        ([key]) => key === parts(selected).slice(-1)[0],
-      );
-      const next = index + offset;
-      if (index < 0 || next < 0 || next >= entries.length) return;
-      [entries[index], entries[next]] = [entries[next], entries[index]];
-      parent.properties = Object.fromEntries(entries);
+      const parent = parentAt(schema, path);
+      delete parent.properties?.[parts(path).slice(-1)[0]];
+      if (selected === path || selected.startsWith(`${path}.`)) {
+        setSelected('');
+      }
     });
   const save = async (publish = false) => {
     if (!doc) return;
@@ -268,10 +273,9 @@ const LowCodeFormBuilderPage: React.FC<{ template?: TemplateBuilderProps }> = ({
       : undefined;
   const availableCatalog = template?.catalog || bundledCatalog || catalog;
   const select = useCallback((path: string) => setSelected(path), []);
-  const rows = useMemo(() => (doc ? enumerate(doc.schema) : []), [doc]);
   if (!doc) return <div>{error || '加载表单中...'}</div>;
   return (
-    <div>
+    <div className="lowcode-builder-page">
       {!template && (
         <Space style={{ marginBottom: 12 }}>
           <Input
@@ -297,8 +301,13 @@ const LowCodeFormBuilderPage: React.FC<{ template?: TemplateBuilderProps }> = ({
         <Alert type="info" message={message} style={{ marginBottom: 12 }} />
       )}
       <div className="lowcode-builder">
-        <aside>
-          <Typography.Title level={5}>组件</Typography.Title>
+        <aside className="lowcode-palette">
+          <div className="lowcode-panel-heading">
+            <AppstoreOutlined />
+            <Typography.Title level={5}>组件库</Typography.Title>
+          </div>
+          <p className="lowcode-panel-description">点击或拖拽组件，搭建你的表单</p>
+          <div className="lowcode-palette-items">
           {availableCatalog
             .filter(
               (item) =>
@@ -308,8 +317,10 @@ const LowCodeFormBuilderPage: React.FC<{ template?: TemplateBuilderProps }> = ({
             .map((item) => (
               <Button
                 block
+                className="lowcode-palette-item"
                 key={`${item.componentName}:${item.version}`}
-                draggable
+                draggable={!previewing}
+                disabled={previewing}
                 onDragStart={(event) =>
                   event.dataTransfer.setData(
                     'text/plain',
@@ -317,76 +328,90 @@ const LowCodeFormBuilderPage: React.FC<{ template?: TemplateBuilderProps }> = ({
                   )
                 }
                 onClick={() => add(item)}
-                style={{ marginBottom: 8 }}
               >
-                {item.manifest.displayName} · {item.version}
+                <span className="lowcode-palette-icon"><AppstoreOutlined /></span>
+                <span>{item.manifest.displayName}</span>
+                <PlusOutlined className="lowcode-palette-add" />
               </Button>
             ))}
+          </div>
         </aside>
-        <div
-          className="lowcode-phone"
-          onDragOver={(event) => event.preventDefault()}
-          onDrop={(event) => {
-            event.preventDefault();
-            const value = event.dataTransfer.getData('text/plain');
-            const item = availableCatalog.find(
-              (candidate) =>
-                `${candidate.componentName}:${candidate.version}` === value,
-            );
-            if (
-              item &&
-              (!template || doc.componentLocks[item.manifest.schemaComponent])
-            )
-              add(item);
-          }}
-        >
-          <div className="lowcode-phone-screen">
-            <h3>{doc.title}</h3>
-            <LowCodeRenderer
-              schema={doc.schema}
-              locks={doc.componentLocks}
-              onSelect={select}
+        <section className="lowcode-canvas">
+          <div className="lowcode-canvas-toolbar">
+            <div>
+              <strong>{previewing ? '表单预览' : '表单画布'}</strong>
+              <span>{previewing ? '体验实际填写效果' : '选中组件，编辑右侧配置'}</span>
+            </div>
+            <Button
+              icon={previewing ? <EditOutlined /> : <EyeOutlined />}
+              type={previewing ? 'primary' : 'default'}
+              onClick={() => setPreviewing(!previewing)}
+            >
+              {previewing ? '返回编辑' : '预览'}
+            </Button>
+          </div>
+          <div
+            className="lowcode-phone"
+            onDragOver={(event) => event.preventDefault()}
+            onDrop={(event) => {
+              event.preventDefault();
+              if (previewing) return;
+              const value = event.dataTransfer.getData('text/plain');
+              const item = availableCatalog.find(
+                (candidate) =>
+                  `${candidate.componentName}:${candidate.version}` === value,
+              );
+              if (
+                item &&
+                (!template || doc.componentLocks[item.manifest.schemaComponent])
+              )
+                add(item);
+            }}
+          >
+            <div className="lowcode-phone-status" aria-hidden="true">
+              <span>9:41</span>
+              <span className="lowcode-phone-camera" />
+              <span>••• ▰</span>
+            </div>
+            <div className="lowcode-phone-screen">
+              <h3>{doc.title}</h3>
+              <LowCodeRenderer
+                key={previewing ? 'preview' : 'editor'}
+                schema={doc.schema}
+                locks={doc.componentLocks}
+                onSelect={previewing ? undefined : select}
+                selectedPath={selected}
+                onRemove={previewing ? undefined : remove}
+              />
+            </div>
+            <div className="lowcode-phone-home" aria-hidden="true" />
+          </div>
+        </section>
+        <aside className="lowcode-config">
+          <div className="lowcode-panel-heading">
+            <SettingOutlined />
+            <Typography.Title level={5}>组件配置</Typography.Title>
+          </div>
+          <p className="lowcode-panel-description">配置所选组件的展示内容与属性</p>
+          {selectedNode && (
+            <div className="lowcode-config-selection">
+              <AppstoreOutlined />
+              <span>{selectedLock?.displayName || selectedNode['x-component']}</span>
+            </div>
+          )}
+          <div className="lowcode-config-form">
+            <PropertyPanel
+              key={selected}
+              node={selectedNode}
+              config={config}
+              onChange={(path, value) =>
+                change((schema) => {
+                  const node = nodeAt(schema, selected);
+                  if (node) writePath(node, path, value);
+                })
+              }
             />
           </div>
-          <div className="lowcode-node-list">
-            {rows.map(({ path, node }) => (
-              <Button
-                key={path}
-                type={path === selected ? 'primary' : 'default'}
-                size="small"
-                onClick={() => setSelected(path)}
-              >
-                {path} · {node.title || node['x-component']}
-              </Button>
-            ))}
-          </div>
-        </div>
-        <aside>
-          <Typography.Title level={5}>属性配置</Typography.Title>
-          {selectedNode && (
-            <Space style={{ marginBottom: 12 }}>
-              <Button size="small" onClick={() => move(-1)}>
-                上移
-              </Button>
-              <Button size="small" onClick={() => move(1)}>
-                下移
-              </Button>
-              <Button size="small" danger onClick={remove}>
-                删除
-              </Button>
-            </Space>
-          )}
-          <PropertyPanel
-            key={selected}
-            node={selectedNode}
-            config={config}
-            onChange={(path, value) =>
-              change((schema) => {
-                const node = nodeAt(schema, selected);
-                if (node) writePath(node, path, value);
-              })
-            }
-          />
         </aside>
       </div>
     </div>

@@ -1,7 +1,289 @@
-.lowcode-builder { display: grid; grid-template-columns: 220px minmax(340px, 1fr) 300px; gap: 16px; min-height: 650px; }
-.lowcode-builder aside { padding: 16px; background: #fff; border: 1px solid #e5e5e5; }
-.lowcode-phone { justify-self: center; width: 390px; max-width: 100%; padding: 12px; border: 8px solid #222; border-radius: 28px; background: #f8f8f8; }
-.lowcode-phone-screen { min-height: 550px; max-height: 70vh; overflow: auto; background: white; padding: 12px; }
-.lowcode-phone-screen h3 { margin: 0 0 12px; }
-.lowcode-node-list { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 12px; }
-@media (max-width: 1080px) { .lowcode-builder { grid-template-columns: 180px minmax(300px, 1fr); } .lowcode-builder aside:last-child { grid-column: 1 / -1; } }
+.lowcode-builder-page {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 96px);
+}
+
+.lowcode-builder {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 220px minmax(360px, 1fr) 300px;
+  gap: 20px;
+  min-height: 700px;
+  color: #253247;
+}
+
+.lowcode-builder aside {
+  min-width: 0;
+  padding: 20px 16px;
+  background: #fff;
+  border: 1px solid #e8edf3;
+  border-radius: 14px;
+}
+
+.lowcode-panel-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lowcode-panel-heading > .anticon {
+  color: #1677ff;
+  font-size: 18px;
+}
+
+.lowcode-panel-heading h5.ant-typography {
+  margin: 0;
+}
+
+.lowcode-panel-description {
+  margin: 10px 0 22px;
+  color: #8591a3;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.lowcode-palette-items {
+  display: grid;
+  gap: 10px;
+}
+
+.lowcode-palette .lowcode-palette-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: auto;
+  padding: 12px;
+  border-color: #edf0f5;
+  border-radius: 10px;
+  background: #fafbfd;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.lowcode-palette .lowcode-palette-item:not(:disabled):hover {
+  border-color: #91caff;
+  background: #f0f7ff;
+  box-shadow: 0 3px 10px rgba(22, 119, 255, 0.08);
+}
+
+.lowcode-palette-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  color: #1677ff;
+  background: #eaf2ff;
+  border-radius: 8px;
+}
+
+.lowcode-palette-add {
+  margin-left: auto;
+  color: #99a6b7;
+  font-size: 12px;
+}
+
+.lowcode-canvas {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-width: 0;
+  min-height: 700px;
+  padding: 20px;
+  border: 1px solid #e8edf3;
+  border-radius: 14px;
+  background-color: #f4f6fa;
+  background-image: radial-gradient(#dce3ed 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.lowcode-canvas-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.lowcode-canvas-toolbar strong {
+  display: block;
+  font-size: 14px;
+}
+
+.lowcode-canvas-toolbar span:not(.anticon):not(.ant-btn > span) {
+  color: #8591a3;
+  font-size: 12px;
+}
+
+.lowcode-phone {
+  display: flex;
+  flex-direction: column;
+  width: 390px;
+  max-width: 100%;
+  min-height: 0;
+  max-height: 900px;
+  margin: 0 auto;
+  padding: 0 6px 10px;
+  border: 5px solid #253247;
+  border-radius: 40px;
+  background: #fff;
+  box-shadow: 0 20px 40px rgba(34, 51, 80, 0.12), 0 0 0 2px #cbd3df;
+}
+
+.lowcode-phone-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  height: 42px;
+  padding: 0 18px;
+  color: #253247;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.lowcode-phone-camera {
+  width: 80px;
+  height: 20px;
+  border-radius: 20px;
+  background: #253247;
+}
+
+.lowcode-phone-screen {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: auto;
+  padding: 16px 12px;
+  background: #fff;
+  scrollbar-width: thin;
+}
+
+.lowcode-phone-screen h3 {
+  margin: 0 0 22px;
+  color: #253247;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.lowcode-phone-home {
+  flex-shrink: 0;
+  width: 100px;
+  height: 4px;
+  margin: 14px auto 0;
+  border-radius: 4px;
+  background: #253247;
+}
+
+.lowcode-editor-node {
+  position: relative;
+  min-width: 0;
+  margin-bottom: 12px;
+  padding: 8px;
+  border: 1px solid #e3e9f1;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.lowcode-editor-node:hover {
+  border-color: #91caff;
+}
+
+.lowcode-editor-node.is-selected,
+.lowcode-editor-node:focus-visible {
+  outline: none;
+  border-color: #1677ff;
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.12);
+}
+
+.lowcode-editor-node > .lowcode-editor-node-remove {
+  position: absolute;
+  top: -9px;
+  right: -9px;
+  z-index: 1;
+  width: 20px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0;
+  color: #8c8c8c;
+  border: 1px solid #e3e9f1;
+  border-radius: 50%;
+  background: #fff;
+  font-size: 10px;
+}
+
+.lowcode-editor-node > .lowcode-editor-node-remove:hover,
+.lowcode-editor-node > .lowcode-editor-node-remove:focus {
+  color: #595959;
+}
+
+.lowcode-editor-node-content {
+  min-width: 0;
+}
+
+.lowcode-config-selection {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+  padding: 12px;
+  color: #1677ff;
+  border: 1px solid #d6e7ff;
+  border-radius: 8px;
+  background: #f0f7ff;
+  overflow-wrap: anywhere;
+}
+
+.lowcode-config-form .ant-empty {
+  margin: 60px 0;
+  color: #8591a3;
+  font-size: 12px;
+}
+
+.lowcode-config-form .ant-formily-item-label label {
+  color: #596a80;
+  font-size: 13px;
+}
+
+.lowcode-config-form .ant-input {
+  border-radius: 6px;
+}
+
+@media (max-width: 1200px) {
+  .lowcode-builder {
+    grid-template-columns: 180px minmax(320px, 1fr) 260px;
+    gap: 12px;
+  }
+
+  .lowcode-canvas {
+    padding: 16px 12px;
+  }
+}
+
+@media (max-width: 1080px) {
+  .lowcode-builder {
+    grid-template-columns: 180px minmax(300px, 1fr);
+  }
+
+  .lowcode-builder .lowcode-config {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .lowcode-builder {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lowcode-palette-items {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lowcode-canvas-toolbar {
+    flex-wrap: wrap;
+  }
+}
