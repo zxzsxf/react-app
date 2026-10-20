@@ -27,9 +27,26 @@ jest.mock('./LowCodeFormBuilderPage', () => ({
     </div>
   ),
 }));
-jest.mock('../lowcode/FlowformManageEditor', () => ({
-  FlowformManageEditor: () => <div>配置编辑器</div>,
-}));
+const mockConfigSchema = {
+  type: 'object',
+  properties: {
+    placeholder: { type: 'string', 'x-component': 'Input' },
+  },
+};
+jest.mock('../lowcode/FlowformManageEditor', () => {
+  const React = require('react');
+  return {
+    FlowformManageEditor: React.forwardRef(({ onReadyChange }: any, ref: any) => {
+      React.useImperativeHandle(ref, () => ({
+        readSchema: async () => mockConfigSchema,
+      }));
+      React.useEffect(() => {
+        onReadyChange(true);
+      }, [onReadyChange]);
+      return <div>配置编辑器</div>;
+    }),
+  };
+});
 
 let host: HTMLDivElement;
 let root: Root;
@@ -84,6 +101,15 @@ test('three steps keep changes local, filter active components, and save the com
   expect(host.textContent).toContain('输入框');
   expect(host.textContent).not.toContain('非活跃卡片');
   expect(api.create).not.toHaveBeenCalled();
+  await act(async () => {
+    host.querySelector<HTMLElement>('.template-component-row')!.click();
+  });
+  expect(host.textContent).toContain('组件信息');
+  expect(host.querySelector<HTMLInputElement>('input[type="checkbox"]')!.checked).toBe(false);
+  expect(
+    Array.from(host.querySelectorAll('button'))
+      .find((button) => button.textContent === '配置组件')!.disabled,
+  ).toBe(true);
   await act(async () =>
     host.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click(),
   );
@@ -120,4 +146,40 @@ test('three steps keep changes local, filter active components, and save the com
   expect(
     sessionStorage.getItem('lowcode:template-draft:testTemplate'),
   ).toBeNull();
+});
+
+test('component config applies fields without bindings and hides steps only while editing', async () => {
+  await act(async () => root.render(<LowCodeTemplateWizardPage />));
+  await click('下一步');
+  await act(async () => {
+    host.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click();
+  });
+  await click('配置组件');
+  expect(host.querySelector('.ant-steps')).toBeNull();
+  expect(host.textContent).not.toContain('读取设计字段');
+  expect(host.querySelector('.ant-select')).toBeNull();
+
+  await click('应用配置并返回');
+  expect(host.querySelector('.ant-steps')).not.toBeNull();
+  expect(host.textContent).not.toContain('配置编辑器');
+  expect(host.querySelector('.ant-alert-error')).toBeNull();
+  expect(host.querySelector('.template-detail-meta strong')!.textContent).toBe('1');
+
+  await click('下一步');
+  (api.create as jest.Mock).mockImplementation(async (_kind, payload) => ({
+    ...payload,
+    revision: 1,
+  }));
+  await click('完成并保存模板');
+  expect(api.create).toHaveBeenCalledWith(
+    'templates',
+    expect.objectContaining({
+      componentLocks: {
+        Input: expect.objectContaining({
+          configSchema: mockConfigSchema,
+          configBindings: {},
+        }),
+      },
+    }),
+  );
 });

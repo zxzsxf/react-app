@@ -4,13 +4,15 @@ import {
   Button,
   Checkbox,
   Descriptions,
+  Empty,
   Input,
   List,
-  Select,
   Space,
   Steps,
+  Tag,
   Typography,
 } from 'antd';
+import { AppstoreOutlined, CodeOutlined, SettingOutlined } from '@ant-design/icons';
 import { useParams } from 'react-router-dom';
 import {
   api,
@@ -28,26 +30,16 @@ import {
   removeTemplateDraft,
 } from '../lowcode/template-draft';
 import LowCodeFormBuilderPage from './LowCodeFormBuilderPage';
+import './LowCodeTemplateWizardPage.css';
 
 const emptySchema = (): SchemaNode => ({ type: 'object', properties: {} });
-const targetsFor = (name: string) => {
-  const props: Record<string, string[]> = {
-    Input: ['placeholder', 'disabled'],
-    Card: ['title'],
-    Button: ['label'],
-  };
-  return [
-    'title',
-    ...(name === 'Input' ? ['required'] : []),
-    ...(props[name] || []).map((prop) => `x-component-props.${prop}`),
-  ];
-};
 
 const TemplateWizard: React.FC<{ id: string }> = ({ id }) => {
   const [doc, setDoc] = useState<Document | null>(null);
   const [step, setStep] = useState(0);
   const [catalog, setCatalog] = useState<ComponentItem[]>([]);
   const [focus, setFocus] = useState('');
+  const [preview, setPreview] = useState<ComponentItem | null>(null);
   const [editing, setEditing] = useState('');
   const [configSchema, setConfigSchema] = useState<SchemaNode>(emptySchema);
   const [bindings, setBindings] = useState<Record<string, string>>({});
@@ -104,6 +96,7 @@ const TemplateWizard: React.FC<{ id: string }> = ({ id }) => {
     if (!doc) return;
     const name = item.manifest.schemaComponent;
     setFocus(name);
+    setPreview(item);
     const locks = { ...doc.componentLocks };
     if (checked) {
       if (
@@ -156,22 +149,13 @@ const TemplateWizard: React.FC<{ id: string }> = ({ id }) => {
     }
   };
 
-  const readConfig = async (apply: boolean) => {
+  const applyConfig = async () => {
     if (!doc || !editor.current || operating.current) return;
     operating.current = true;
     setBusy(true);
     setError('');
     try {
       const schema = await editor.current.readSchema();
-      const fields = Object.keys(schema.properties || {});
-      const currentBindings = Object.fromEntries(
-        Object.entries(bindings).filter(([key]) => fields.includes(key)),
-      );
-      setConfigSchema(schema);
-      setBindings(currentBindings);
-      if (!apply) return;
-      if (fields.some((field) => !currentBindings[field]))
-        throw new Error('请为每个配置字段选择目标属性');
       update({
         ...doc,
         componentLocks: {
@@ -179,7 +163,7 @@ const TemplateWizard: React.FC<{ id: string }> = ({ id }) => {
           [editing]: {
             ...doc.componentLocks[editing],
             configSchema: schema,
-            configBindings: currentBindings,
+            configBindings: bindings,
           },
         },
       });
@@ -230,7 +214,20 @@ const TemplateWizard: React.FC<{ id: string }> = ({ id }) => {
   };
 
   if (!doc) return <div>{error || '加载模板中...'}</div>;
-  const focused = doc.componentLocks[focus];
+  const focusedLock = doc.componentLocks[focus];
+  const isSelected = !!focusedLock && (!preview || (
+    focusedLock.remoteName === preview.componentName &&
+    focusedLock.version === preview.version
+  ));
+  const focused: ComponentLock | undefined = isSelected
+    ? focusedLock
+    : preview ? {
+        remoteName: preview.componentName,
+        version: preview.version,
+        configVersion: 0,
+        displayName: preview.manifest.displayName,
+        defaultFieldSchema: preview.manifest.defaultFieldSchema,
+      } : undefined;
   const selectedCatalog: ComponentItem[] = Object.entries(
     doc.componentLocks,
   ).map(([name, lock]) => ({
@@ -251,211 +248,281 @@ const TemplateWizard: React.FC<{ id: string }> = ({ id }) => {
   }));
 
   return (
-    <div>
-      <Typography.Title level={2}>表单模板配置</Typography.Title>
-      <Steps current={step} style={{ marginBottom: 24 }}>
-        <Steps.Step title="模板信息" />
-        <Steps.Step title="选择组件与配置表单" />
-        <Steps.Step title="配置表单模板" />
-      </Steps>
-      {error && (
-        <Alert type="error" message={error} style={{ marginBottom: 16 }} />
-      )}
-      {message && (
-        <Alert type="success" message={message} style={{ marginBottom: 16 }} />
-      )}
-      {step === 0 && (
-        <Space direction="vertical" style={{ width: '100%' }}>
-          <Typography.Text>模板名称 *</Typography.Text>
-          <Input
-            aria-label="模板名称"
-            maxLength={160}
-            value={doc.title}
-            onChange={(event) => update({ ...doc, title: event.target.value })}
-            style={{ maxWidth: 400 }}
-          />
-          <Descriptions column={1}>
-            <Descriptions.Item label="模板 ID">{id}</Descriptions.Item>
-            <Descriptions.Item label="创建时间">
-              {doc.createdAt
-                ? new Date(doc.createdAt).toLocaleString()
-                : '完成第三步保存时生成'}
-            </Descriptions.Item>
-          </Descriptions>
-          <Typography.Text type="secondary">
-            信息暂存在当前浏览器，完成第三步后统一保存。
-          </Typography.Text>
-        </Space>
-      )}
-      {step === 1 && !editing && (
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '300px minmax(0, 1fr)',
-            gap: 24,
-          }}
-        >
-          <div>
-            <Typography.Title level={5}>活跃组件</Typography.Title>
-            <List
-              bordered
-              dataSource={catalog}
-              locale={{ emptyText: '暂无可用的活跃组件' }}
-              renderItem={(item) => {
-                const name = item.manifest.schemaComponent;
-                const lock = doc.componentLocks[name];
-                return (
-                  <List.Item>
-                    <Checkbox
-                      checked={
-                        lock?.remoteName === item.componentName &&
-                        lock?.version === item.version
-                      }
-                      onChange={(event) => choose(item, event.target.checked)}
-                    >
-                      {item.manifest.displayName}
-                    </Checkbox>
-                  </List.Item>
-                );
-              }}
+    <div className="template-wizard">
+      <div className="template-wizard-content">
+        {!editing && (
+          <Steps current={step} style={{ marginBottom: 24 }}>
+            <Steps.Step title="模板信息" />
+            <Steps.Step title="选择组件与配置表单" />
+            <Steps.Step title="配置表单模板" />
+          </Steps>
+        )}
+        {error && (
+          <Alert type="error" message={error} style={{ marginBottom: 16 }} />
+        )}
+        {message && (
+          <Alert type="success" message={message} style={{ marginBottom: 16 }} />
+        )}
+        {step === 0 && (
+          <Space direction="vertical" style={{ width: '100%' }}>
+            <Typography.Text>模板名称 *</Typography.Text>
+            <Input
+              aria-label="模板名称"
+              maxLength={160}
+              value={doc.title}
+              onChange={(event) => update({ ...doc, title: event.target.value })}
+              style={{ maxWidth: 400 }}
             />
-            <Typography.Title level={5}>已选组件</Typography.Title>
-            <Space wrap>
-              {Object.entries(doc.componentLocks).map(([name, lock]) => (
-                <Button
-                  key={name}
-                  type={focus === name ? 'primary' : 'default'}
-                  onClick={() => setFocus(name)}
-                >
-                  {lock.displayName || name}
-                </Button>
-              ))}
-            </Space>
+            <Descriptions column={1}>
+              <Descriptions.Item label="模板 ID">{id}</Descriptions.Item>
+              <Descriptions.Item label="创建时间">
+                {doc.createdAt
+                  ? new Date(doc.createdAt).toLocaleString()
+                  : '完成第三步保存时生成'}
+              </Descriptions.Item>
+            </Descriptions>
+            <Typography.Text type="secondary">
+              信息暂存在当前浏览器，完成第三步后统一保存。
+            </Typography.Text>
+          </Space>
+        )}
+        {step === 1 && !editing && (
+          <div className="template-component-layout">
+            <div>
+              <Typography.Title level={5}>活跃组件</Typography.Title>
+              <List
+                bordered
+                dataSource={catalog}
+                locale={{ emptyText: '暂无可用的活跃组件' }}
+                renderItem={(item) => {
+                  const name = item.manifest.schemaComponent;
+                  const lock = doc.componentLocks[name];
+                  const checked = lock?.remoteName === item.componentName &&
+                    lock?.version === item.version;
+                  const active = focus === name && (!preview || (
+                    preview.componentName === item.componentName &&
+                    preview.version === item.version
+                  ));
+                  const showInfo = () => {
+                    setFocus(name);
+                    setPreview(item);
+                  };
+                  return (
+                    <List.Item
+                      className={`template-component-row${active ? ' is-active' : ''}`}
+                      onClick={showInfo}
+                      onKeyDown={(event) => {
+                        if (event.target === event.currentTarget && (
+                          event.key === 'Enter' || event.key === ' '
+                        )) {
+                          event.preventDefault();
+                          showInfo();
+                        }
+                      }}
+                      tabIndex={0}
+                      aria-label={`查看${item.manifest.displayName}组件信息`}
+                      role="button"
+                    >
+                      <span onClick={(event) => event.stopPropagation()}>
+                        <Checkbox
+                          aria-label={`选择${item.manifest.displayName}`}
+                          checked={checked}
+                          onChange={(event) => choose(item, event.target.checked)}
+                        />
+                      </span>
+                      <span className="template-component-name">
+                        {item.manifest.displayName}
+                      </span>
+                      <Typography.Text type="secondary">v{item.version}</Typography.Text>
+                    </List.Item>
+                  );
+                }}
+              />
+              <Typography.Title level={5}>已选组件</Typography.Title>
+              <div className="template-selected-components">
+                {!Object.keys(doc.componentLocks).length && (
+                  <Typography.Text type="secondary">暂无已选组件</Typography.Text>
+                )}
+                {Object.entries(doc.componentLocks).map(([name, lock]) => (
+                  <Button
+                    key={name}
+                    className={`template-selected-component${focus === name && isSelected ? ' is-active' : ''}`}
+                    aria-pressed={focus === name && isSelected}
+                    onClick={() => {
+                      setFocus(name);
+                      setPreview(null);
+                    }}
+                  >
+                    <span className="template-selected-component-title">
+                      {lock.displayName || name}
+                    </span>
+                    <span className="template-selected-component-version">v{lock.version}</span>
+                  </Button>
+                ))}
+              </div>
+            </div>
+            <section className="template-component-detail" aria-label="组件信息">
+              {focused ? (
+                <>
+                  <div className="template-detail-header">
+                    <div className="template-detail-heading">
+                      <span className="template-detail-icon" aria-hidden="true">
+                        <AppstoreOutlined />
+                      </span>
+                      <div className="template-detail-title">
+                        <Typography.Text type="secondary">组件信息</Typography.Text>
+                        <Typography.Title level={4}>
+                          {focused.displayName || focus}
+                        </Typography.Title>
+                        <Space size={8} wrap>
+                          <Tag color="blue">v{focused.version}</Tag>
+                          <Tag color={isSelected ? 'green' : 'default'}>
+                            {isSelected ? '已加入模板' : '未选择'}
+                          </Tag>
+                        </Space>
+                      </div>
+                    </div>
+                    <div className="template-detail-action">
+                      <Button
+                        type="primary"
+                        icon={<SettingOutlined />}
+                        disabled={!isSelected}
+                        onClick={() => openConfig(focus, focused)}
+                      >
+                        配置组件
+                      </Button>
+                      {!isSelected && (
+                        <Typography.Text type="secondary">
+                          勾选该组件后即可配置
+                        </Typography.Text>
+                      )}
+                    </div>
+                  </div>
+                  <div className="template-detail-body">
+                    <dl className="template-detail-meta">
+                      <div>
+                        <dt>远程组件</dt>
+                        <dd>{focused.remoteName}</dd>
+                      </div>
+                      <div>
+                        <dt>组件标识</dt>
+                        <dd>{focus}</dd>
+                      </div>
+                      <div>
+                        <dt>配置字段</dt>
+                        <dd>
+                          <strong>
+                            {Object.keys(focused.configSchema?.properties || {}).length}
+                          </strong>
+                          <span className="template-detail-unit">个字段</span>
+                        </dd>
+                      </div>
+                    </dl>
+                    <div className="template-schema-panel">
+                      <div className="template-schema-header">
+                        <span><CodeOutlined /> 默认字段 Schema</span>
+                        <span className="template-schema-format">JSON</span>
+                      </div>
+                      {focused.defaultFieldSchema ? (
+                        <pre className="template-schema-code" tabIndex={0} aria-label="默认字段 Schema">
+                          <code>{JSON.stringify(focused.defaultFieldSchema, null, 2)}</code>
+                        </pre>
+                      ) : (
+                        <div className="template-schema-empty">暂无默认字段 Schema</div>
+                      )}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="template-detail-empty">
+                  <Empty
+                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                    description={
+                      <>
+                        <Typography.Title level={5}>查看组件信息</Typography.Title>
+                        <Typography.Text type="secondary">
+                          点击左侧组件查看详情，勾选后可配置组件表单
+                        </Typography.Text>
+                      </>
+                    }
+                  />
+                </div>
+              )}
+            </section>
           </div>
+        )}
+        {step === 1 && editing && (
           <div>
-            {focused ? (
-              <>
-                <Descriptions title="组件信息" column={1}>
-                  <Descriptions.Item label="名称">
-                    {focused.displayName || focus}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="远程组件">
-                    {focused.remoteName}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="版本">
-                    {focused.version}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="配置字段">
-                    {Object.keys(focused.configSchema?.properties || {}).length}
-                  </Descriptions.Item>
-                </Descriptions>
-                <Button
-                  type="primary"
-                  onClick={() => openConfig(focus, focused)}
-                >
-                  配置组件
-                </Button>
-                <pre
-                  style={{ marginTop: 16, maxHeight: 300, overflow: 'auto' }}
-                >
-                  {JSON.stringify(focused.defaultFieldSchema, null, 2)}
-                </pre>
-              </>
-            ) : (
-              <Typography.Text>
-                从左侧选择组件，查看信息并编辑组件的配置表单。
-              </Typography.Text>
+            <Typography.Title level={4}>
+              {editing} · 配置表单编辑
+            </Typography.Title>
+            <Space wrap style={{ marginBottom: 12 }}>
+              <Button
+                type="primary"
+                disabled={!ready || busy}
+                onClick={applyConfig}
+              >
+                应用配置并返回
+              </Button>
+              <Button disabled={busy} onClick={() => setEditing('')}>
+                取消编辑
+              </Button>
+            </Space>
+            <FlowformManageEditor
+              key={editing}
+              ref={editor}
+              kind="component-configs"
+              id={`${id}:${editing}`}
+              schema={configSchema}
+              onReadyChange={setReady}
+              onSave={applyConfig}
+            />
+          </div>
+        )}
+        {step === 2 && (
+          <LowCodeFormBuilderPage
+            template={{
+              document: doc,
+              catalog: selectedCatalog,
+              onChange: update,
+            }}
+          />
+        )}
+      </div>
+      {!editing && (
+        <div className="template-wizard-footer">
+          <div>
+            {step > 0 && (
+              <Button disabled={busy} onClick={() => setStep(step - 1)}>
+                上一步
+              </Button>
             )}
           </div>
-        </div>
-      )}
-      {step === 1 && editing && (
-        <div>
-          <Typography.Title level={4}>
-            {editing} · 配置表单编辑
-          </Typography.Title>
-          <Space wrap style={{ marginBottom: 12 }}>
-            <Button disabled={!ready || busy} onClick={() => readConfig(false)}>
-              读取设计字段
-            </Button>
-            <Button
-              type="primary"
-              disabled={!ready || busy}
-              onClick={() => readConfig(true)}
-            >
-              应用配置并返回
-            </Button>
-            <Button disabled={busy} onClick={() => setEditing('')}>
-              取消编辑
-            </Button>
-            {Object.keys(configSchema.properties || {}).map((field) => (
-              <Space key={field}>
-                <span>{field}</span>
-                <Select
-                  style={{ width: 240 }}
-                  placeholder="选择目标属性"
-                  value={bindings[field]}
-                  onChange={(value) =>
-                    setBindings((previous) => ({ ...previous, [field]: value }))
-                  }
-                  options={targetsFor(editing).map((value) => ({
-                    label: value,
-                    value,
-                  }))}
-                />
-              </Space>
-            ))}
+          <Space wrap>
+            {step < 2 && (
+              <Button
+                type="primary"
+                disabled={
+                  !doc.title.trim() ||
+                  (step === 1 && !Object.keys(doc.componentLocks).length)
+                }
+                onClick={() => setStep(step + 1)}
+              >
+                下一步
+              </Button>
+            )}
+            {step === 2 && (
+              <>
+                <Button type="primary" loading={busy} onClick={() => save(false)}>
+                  完成并保存模板
+                </Button>
+                <Button disabled={busy} onClick={() => save(true)}>
+                  保存并发布模板
+                </Button>
+              </>
+            )}
           </Space>
-          <FlowformManageEditor
-            key={editing}
-            ref={editor}
-            kind="component-configs"
-            id={`${id}:${editing}`}
-            schema={configSchema}
-            onReadyChange={setReady}
-            onSave={() => readConfig(true)}
-          />
         </div>
-      )}
-      {step === 2 && (
-        <LowCodeFormBuilderPage
-          template={{
-            document: doc,
-            catalog: selectedCatalog,
-            onChange: update,
-          }}
-        />
-      )}
-      {!editing && (
-        <Space style={{ marginTop: 24 }}>
-          {step > 0 && (
-            <Button disabled={busy} onClick={() => setStep(step - 1)}>
-              上一步
-            </Button>
-          )}
-          {step < 2 && (
-            <Button
-              type="primary"
-              disabled={
-                !doc.title.trim() ||
-                (step === 1 && !Object.keys(doc.componentLocks).length)
-              }
-              onClick={() => setStep(step + 1)}
-            >
-              下一步
-            </Button>
-          )}
-          {step === 2 && (
-            <>
-              <Button type="primary" loading={busy} onClick={() => save(false)}>
-                完成并保存模板
-              </Button>
-              <Button disabled={busy} onClick={() => save(true)}>
-                保存并发布模板
-              </Button>
-            </>
-          )}
-        </Space>
       )}
     </div>
   );
