@@ -1,8 +1,8 @@
 import React, { createRef } from 'react';
 import { createRoot, Root } from 'react-dom/client';
-import { FlowformManageEditor, FlowformManageEditorHandle } from './FlowformManageEditor';
-import { SchemaNode } from './api';
-import { isManageMessage, MANAGE_CHANNEL, MANAGE_VERSION } from './manage-editor-protocol';
+import { FlowformManageEditor, FlowformManageEditorHandle } from '../../lowcode/FlowformManageEditor';
+import { SchemaNode } from '../../lowcode/api';
+import { isManageMessage, MANAGE_CHANNEL, MANAGE_VERSION } from '../../lowcode/manage-editor-protocol';
 
 const act: typeof import('react-dom/test-utils').act = (React as any).act;
 

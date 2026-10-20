@@ -1,8 +1,8 @@
 import React from 'react';
 import { createRoot, Root } from 'react-dom/client';
-import LowCodeManagerPage from './LowCodeManagerPage';
-import { api } from '../lowcode/api';
-import { readTemplateDraft } from '../lowcode/template-draft';
+import LowCodeManagerPage from '../../pages/LowCodeManagerPage';
+import { api } from '../../lowcode/api';
+import { readTemplateDraft } from '../../lowcode/template-draft';
 
 const act: typeof import('react-dom/test-utils').act = (React as any).act;
 const mockNavigate = jest.fn();
@@ -12,7 +12,7 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
   Link: ({ children }: any) => <span>{children}</span>,
 }), { virtual: true });
-jest.mock('../lowcode/api', () => ({
+jest.mock('../../lowcode/api', () => ({
   api: { list: jest.fn(), activeComponents: jest.fn(), components: jest.fn(), create: jest.fn() },
 }));
 jest.mock('antd', () => ({

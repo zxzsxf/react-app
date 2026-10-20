@@ -38,8 +38,11 @@ You will also see any lint errors in the console.
 
 ### `npm test`
 
-Launches the test runner in the interactive watch mode.
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+启动交互式测试监听。所有测试统一存放在 `src/tests`，按基础逻辑（`unit`）、组件（`components`）和页面（`pages`）分类。
+
+运行全部测试并退出：`npm run test:ci`。按类别执行：`npm run test:unit`、`npm run test:components`、`npm run test:pages`。
+
+详见[单测介绍](src/tests/README.md)和[单测使用文档](src/tests/USAGE.md)。
 
 ### `npm run build`
 

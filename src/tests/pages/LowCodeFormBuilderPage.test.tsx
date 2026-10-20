@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Simulate } from 'react-dom/test-utils';
-import LowCodeFormBuilderPage from './LowCodeFormBuilderPage';
-import { Document } from '../lowcode/api';
+import LowCodeFormBuilderPage from '../../pages/LowCodeFormBuilderPage';
+import { Document } from '../../lowcode/api';
 
 const act: typeof import('react-dom/test-utils').act = (React as any).act;
 jest.mock('react-router-dom', () => ({ useParams: () => ({}) }), {
   virtual: true,
 });
-jest.mock('../lowcode/MobileRenderer', () => ({
+jest.mock('../../lowcode/MobileRenderer', () => ({
   LowCodeRenderer: ({ schema, onSelect, onRemove, selectedPath }: any) => (
     <div>
       {Object.keys(schema.properties || {}).map((path) => onSelect ? (
@@ -29,7 +29,7 @@ jest.mock('../lowcode/MobileRenderer', () => ({
     </div>
   ),
 }));
-jest.mock('../lowcode/api', () => ({
+jest.mock('../../lowcode/api', () => ({
   api: { published: jest.fn(), versioned: jest.fn() },
 }));
 

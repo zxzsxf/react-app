@@ -1,5 +1,5 @@
-import { moveSchemaNode } from './schema-drag';
-import { SchemaNode } from './api';
+import { moveSchemaNode } from '../../lowcode/schema-drag';
+import { SchemaNode } from '../../lowcode/api';
 
 const createSchema = (): SchemaNode => ({
   type: 'object',

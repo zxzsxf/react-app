@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Simulate } from 'react-dom/test-utils';
-import LowCodeFormBuilderPage from './LowCodeFormBuilderPage';
-import { Document } from '../lowcode/api';
+import LowCodeFormBuilderPage from '../../pages/LowCodeFormBuilderPage';
+import { Document } from '../../lowcode/api';
 
 const act: typeof import('react-dom/test-utils').act = (React as any).act;
 jest.mock('react-router-dom', () => ({ useParams: () => ({}) }), { virtual: true });
-jest.mock('../lowcode/api', () => ({ api: {} }));
+jest.mock('../../lowcode/api', () => ({ api: {} }));
 jest.mock('remote-component-loader', () => ({
   ReactRemoteComponent: ({ componentProps }: any) => (
     <section data-placeholder={componentProps.placeholder}>

@@ -1,8 +1,8 @@
 import React from 'react';
 import { createRoot, Root } from 'react-dom/client';
-import LowCodeTemplateWizardPage from './LowCodeTemplateWizardPage';
-import { api } from '../lowcode/api';
-import { storeTemplateDraft } from '../lowcode/template-draft';
+import LowCodeTemplateWizardPage from '../../pages/LowCodeTemplateWizardPage';
+import { api } from '../../lowcode/api';
+import { storeTemplateDraft } from '../../lowcode/template-draft';
 
 const act: typeof import('react-dom/test-utils').act = (React as any).act;
 jest.mock(
@@ -10,7 +10,7 @@ jest.mock(
   () => ({ useParams: () => ({ id: 'testTemplate' }) }),
   { virtual: true },
 );
-jest.mock('../lowcode/api', () => ({
+jest.mock('../../lowcode/api', () => ({
   api: {
     components: jest.fn(),
     activeComponents: jest.fn(),
@@ -19,7 +19,7 @@ jest.mock('../lowcode/api', () => ({
     get: jest.fn(),
   },
 }));
-jest.mock('./LowCodeFormBuilderPage', () => ({
+jest.mock('../../pages/LowCodeFormBuilderPage', () => ({
   __esModule: true,
   default: ({ template }: any) => (
     <div data-testid="builder">
@@ -33,7 +33,7 @@ const mockConfigSchema = {
     placeholder: { type: 'string', 'x-component': 'Input' },
   },
 };
-jest.mock('../lowcode/FlowformManageEditor', () => {
+jest.mock('../../lowcode/FlowformManageEditor', () => {
   const React = require('react');
   return {
     FlowformManageEditor: React.forwardRef(({ onReadyChange }: any, ref: any) => {

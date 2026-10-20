@@ -1,4 +1,4 @@
-import { api } from './api';
+import { api } from '../../lowcode/api';
 
 const originalFetch = global.fetch;
 

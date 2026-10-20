@@ -41,6 +41,10 @@
     "sync:flowform-pc": "node scripts/sync-flowform-pc.cjs",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:ci": "react-scripts test --watchAll=false --runInBand",
+    "test:unit": "react-scripts test src/tests/unit --watchAll=false --runInBand",
+    "test:components": "react-scripts test src/tests/components --watchAll=false --runInBand",
+    "test:pages": "react-scripts test src/tests/pages --watchAll=false --runInBand",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

@@ -1,8 +1,8 @@
 import React from 'react';
 import { createRoot, Root } from 'react-dom/client';
-import LowCodeManageEditorPage from './LowCodeManageEditorPage';
-import { api, Document, SchemaNode } from '../lowcode/api';
-import { storeTemplateDraft } from '../lowcode/template-draft';
+import LowCodeManageEditorPage from '../../pages/LowCodeManageEditorPage';
+import { api, Document, SchemaNode } from '../../lowcode/api';
+import { storeTemplateDraft } from '../../lowcode/template-draft';
 
 const act: typeof import('react-dom/test-utils').act = (React as any).act;
 let mockSchema: SchemaNode;
@@ -10,7 +10,7 @@ let mockId = 't1';
 let mockSaveShortcut: () => void;
 
 jest.mock('react-router-dom', () => ({ useParams: () => ({ id: mockId }) }), { virtual: true });
-jest.mock('../lowcode/api', () => ({
+jest.mock('../../lowcode/api', () => ({
   api: {
     get: jest.fn(),
     create: jest.fn(),
@@ -20,7 +20,7 @@ jest.mock('../lowcode/api', () => ({
     publish: jest.fn(),
   },
 }));
-jest.mock('../lowcode/FlowformManageEditor', () => {
+jest.mock('../../lowcode/FlowformManageEditor', () => {
   const React = require('react');
   return {
     FlowformManageEditor: React.forwardRef((props: any, ref: any) => {

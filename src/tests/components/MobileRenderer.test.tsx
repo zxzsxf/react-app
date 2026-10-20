@@ -1,7 +1,7 @@
 import React from 'react';
 import { Simulate } from 'react-dom/test-utils';
 import { createRoot } from 'react-dom/client';
-import { LowCodeRenderer, MobileFormHandle } from './MobileRenderer';
+import { LowCodeRenderer, MobileFormHandle } from '../../lowcode/MobileRenderer';
 const act: typeof import('react-dom/test-utils').act = (React as any).act;
 
 jest.mock('remote-component-loader', () => ({

@@ -1,6 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { DesignerShell } from './DesignerShell';
+import { DesignerShell } from '../../lowcode/DesignerShell';
 import { createFormDesigner, loadFormSchema, readFormSchema } from 'flowform-designable-bridge';
 import { IconWidget } from '@designable/react';
 const act: typeof import('react-dom/test-utils').act = (React as any).act;
