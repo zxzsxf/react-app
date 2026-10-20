@@ -1,0 +1,7 @@
+.lowcode-builder { display: grid; grid-template-columns: 220px minmax(340px, 1fr) 300px; gap: 16px; min-height: 650px; }
+.lowcode-builder aside { padding: 16px; background: #fff; border: 1px solid #e5e5e5; }
+.lowcode-phone { justify-self: center; width: 390px; max-width: 100%; padding: 12px; border: 8px solid #222; border-radius: 28px; background: #f8f8f8; }
+.lowcode-phone-screen { min-height: 550px; max-height: 70vh; overflow: auto; background: white; padding: 12px; }
+.lowcode-phone-screen h3 { margin: 0 0 12px; }
+.lowcode-node-list { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 12px; }
+@media (max-width: 1080px) { .lowcode-builder { grid-template-columns: 180px minmax(300px, 1fr); } .lowcode-builder aside:last-child { grid-column: 1 / -1; } }

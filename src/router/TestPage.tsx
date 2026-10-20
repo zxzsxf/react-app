@@ -19,9 +19,11 @@ export const menuItems = [
     },
     {
       key: '/form-builder',
+      // roles: ['B'],
       icon: <FormOutlined />,
       label: <Link to="/form-builder">表单管理</Link>,
     },
+    { key: '/manage/templates', roles: ['M'], icon: <FormOutlined />, label: <Link to="/manage/templates">模板管理</Link> },
     {
       key: '/schema',
       icon: <SettingOutlined />,

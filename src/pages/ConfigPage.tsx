@@ -199,9 +199,10 @@ const ConfigPage: React.FC = () => {
   return (
     <div style={{ padding: '24px' }}>
       <h2>组件配置信息</h2>
+      <p>远程组件版本通过受控构建脚本发布；此页面仅用于查看版本。</p>
       <Table
         loading={loading}
-        columns={columns}
+        columns={columns.filter(column => column.key !== 'action')}
         dataSource={processDataForTable()}
         expandable={{
           defaultExpandAllRows: true,

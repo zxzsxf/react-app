@@ -21,7 +21,7 @@ declare global {
 // 获取组件配置信息
 const fetchComponentsInfo = async () => {
   try {
-    const response = await fetch('http://localhost:1001/micro/config/active-components');
+    const response = await fetch('/micro/config/active-components');
     const responseJson = await response.json() || {};
     const data = responseJson.data || {};
     window.microConfig = data;
@@ -36,7 +36,7 @@ const fetchComponentsInfo = async () => {
 // 初始化应用
 const initApp = async () => {
   await fetchComponentsInfo();
-  initMicro('http://localhost:1001/micro/components/find', 'test-react-app');
+  initMicro(`${window.location.origin}/micro/components/find`, 'test-react-app');
   const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
   );
