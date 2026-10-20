@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 // @ts-ignore
 import { Button } from 'zxz-component'
 import { ReactRemoteComponent } from 'remote-component-loader';
-import FlowFormSlot from '../components/FlowFormSlot';
+import FlowFormSlot from '../../components/FlowFormSlot';
 import { Link } from 'react-router-dom';
 
 interface ActiveComponent {

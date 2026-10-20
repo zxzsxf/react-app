@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Alert, Button, Form, Input, Typography } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../lowcode/Auth';
+import { useAuth } from '../../lowcode/Auth';
 
 const LowCodeLoginPage: React.FC = () => {
   const { login } = useAuth();

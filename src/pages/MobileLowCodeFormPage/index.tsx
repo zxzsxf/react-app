@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert, Button, Typography } from 'antd';
 import { useParams } from 'react-router-dom';
-import { api, Snapshot } from '../lowcode/api';
-import { LowCodeRenderer, MobileFormHandle } from '../lowcode/MobileRenderer';
+import { api, Snapshot } from '../../lowcode/api';
+import { LowCodeRenderer, MobileFormHandle } from '../../lowcode/MobileRenderer';
 
 const MobileLowCodeFormPage: React.FC = () => {
   const { formCode = '' } = useParams();

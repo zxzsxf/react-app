@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Spin, Typography } from 'antd';
 import { useLocation } from 'react-router-dom';
-import { getForm, listForms, StoredForm } from '../flowforms/api';
-import StoredFormView from '../components/StoredFormView';
+import { getForm, listForms, StoredForm } from '../../flowforms/api';
+import StoredFormView from '../../components/StoredFormView';
 
 const DynamicFormPage: React.FC = () => {
   const { pathname } = useLocation();

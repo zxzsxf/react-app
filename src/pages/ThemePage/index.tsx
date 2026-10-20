@@ -1,4 +1,4 @@
-import { useTheme } from '../styles/ThemeContext';
+import { useTheme } from '../../styles/ThemeContext';
 
 function ThemePage() {
   const { theme, setTheme } = useTheme();

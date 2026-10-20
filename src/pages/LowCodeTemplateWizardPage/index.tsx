@@ -20,17 +20,17 @@ import {
   ComponentLock,
   Document,
   SchemaNode,
-} from '../lowcode/api';
+} from '../../lowcode/api';
 import {
   FlowformManageEditor,
   FlowformManageEditorHandle,
-} from '../lowcode/FlowformManageEditor';
+} from '../../lowcode/FlowformManageEditor';
 import {
   readTemplateDraft,
   removeTemplateDraft,
-} from '../lowcode/template-draft';
-import LowCodeFormBuilderPage from './LowCodeFormBuilderPage';
-import { withComponentConfigs } from '../lowcode/template-schema';
+} from '../../lowcode/template-draft';
+import LowCodeFormBuilderPage from '../LowCodeFormBuilderPage';
+import { withComponentConfigs } from '../../lowcode/template-schema';
 import './LowCodeTemplateWizardPage.css';
 
 const emptySchema = (): SchemaNode => ({ type: 'object', properties: {} });

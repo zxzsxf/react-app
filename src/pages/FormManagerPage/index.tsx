@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Button, Form, Input, List, Space, Typography } from 'antd';
 import { Link } from 'react-router-dom';
-import { FormMeta, listForms } from '../flowforms/api';
-import { formRoutePattern, openFormEditor } from '../flowforms/editor';
+import { FormMeta, listForms } from '../../flowforms/api';
+import { formRoutePattern, openFormEditor } from '../../flowforms/editor';
 
 const FormManagerPage: React.FC = () => {
   const [forms, setForms] = useState<FormMeta[]>([]);

@@ -8,14 +8,14 @@ import {
   Document,
   SchemaNode,
   Snapshot,
-} from '../lowcode/api';
-import { LowCodeRenderer } from '../lowcode/MobileRenderer';
+} from '../../lowcode/api';
+import { LowCodeRenderer } from '../../lowcode/MobileRenderer';
 import {
   moveSchemaNode,
   orderedProperties,
   SchemaDropTarget,
   setPropertyOrder,
-} from '../lowcode/schema-drag';
+} from '../../lowcode/schema-drag';
 import { createForm, onFieldInputValueChange } from '@formily/core';
 import { createSchemaField } from '@formily/react';
 import { Path as FormPath } from '@formily/path';

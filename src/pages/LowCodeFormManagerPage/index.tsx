@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Button, Input, List, Select, Space, Typography } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
-import { api, Document } from '../lowcode/api';
+import { api, Document } from '../../lowcode/api';
 
 const LowCodeFormManagerPage: React.FC = () => {
   const [forms, setForms] = useState<Document[]>([]);

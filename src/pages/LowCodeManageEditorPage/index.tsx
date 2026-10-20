@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert, Button, Input, Select, Space, Typography } from 'antd';
 import { useParams } from 'react-router-dom';
-import { api, ComponentItem, ComponentLock, Document, SchemaNode } from '../lowcode/api';
-import { FlowformManageEditor, FlowformManageEditorHandle } from '../lowcode/FlowformManageEditor';
-import { readTemplateDraft, removeTemplateDraft } from '../lowcode/template-draft';
+import { api, ComponentItem, ComponentLock, Document, SchemaNode } from '../../lowcode/api';
+import { FlowformManageEditor, FlowformManageEditorHandle } from '../../lowcode/FlowformManageEditor';
+import { readTemplateDraft, removeTemplateDraft } from '../../lowcode/template-draft';
 
 type Kind = 'templates' | 'component-configs';
 

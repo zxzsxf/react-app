@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Button, Input, List, Select, Space, Typography } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
-import { api, ActiveComponentItem, Document } from '../lowcode/api';
-import { storeTemplateDraft } from '../lowcode/template-draft';
+import { api, ActiveComponentItem, Document } from '../../lowcode/api';
+import { storeTemplateDraft } from '../../lowcode/template-draft';
 
 const LowCodeManagerPage: React.FC<{ kind: 'templates' | 'component-configs' }> = ({ kind }) => {
   const [items, setItems] = useState<Document[]>([]);

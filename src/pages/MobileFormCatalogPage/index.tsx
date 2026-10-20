@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, List, Typography } from 'antd';
 import { Link } from 'react-router-dom';
-import { api } from '../lowcode/api';
+import { api } from '../../lowcode/api';
 
 const MobileFormCatalogPage: React.FC = () => {
   const [forms, setForms] = useState<{ id: string; title: string; version: number }[]>([]);
