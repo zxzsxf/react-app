@@ -18,6 +18,7 @@ import {
 } from '../lowcode/schema-drag';
 import { createForm, onFieldInputValueChange } from '@formily/core';
 import { createSchemaField } from '@formily/react';
+import { Path as FormPath } from '@formily/path';
 import {
   Form as SchemaForm,
   FormItem,
@@ -45,16 +46,9 @@ const enumerate = (
     return [{ path, node }, ...enumerate(node, path)];
   });
 const readPath = (node: SchemaNode, path: string): any =>
-  path.startsWith('x-component-props.')
-    ? node['x-component-props']?.[path.split('.')[1]]
-    : (node as any)[path];
+  FormPath.getIn(node, path);
 const writePath = (node: SchemaNode, path: string, value: any) => {
-  if (path.startsWith('x-component-props.'))
-    node['x-component-props'] = {
-      ...node['x-component-props'],
-      [path.split('.')[1]]: value,
-    };
-  else (node as any)[path] = value;
+  FormPath.setIn(node, path, value);
 };
 
 const ConfigFields = createSchemaField({
@@ -64,7 +58,7 @@ const ConfigFields = createSchemaField({
 const PropertyPanel: React.FC<{
   node: SchemaNode | undefined;
   config: Snapshot | null;
-  onChange: (path: string, value: any) => void;
+  onChange: (path: string, value: any, values: Record<string, unknown>) => void;
 }> = ({ node, config, onChange }) => {
   const changeRef = React.useRef(onChange);
   changeRef.current = onChange;
@@ -73,23 +67,20 @@ const PropertyPanel: React.FC<{
       createForm({
         effects() {
           onFieldInputValueChange('*', (field) => {
-            const path = config?.bindings[field.path.toString()];
-            if (path) changeRef.current(path, field.value);
+            const fieldPath = field.path.toString();
+            const path = config?.bindings[fieldPath] || `x-component-props.${fieldPath}`;
+            changeRef.current(path, field.value, clone(field.form.values));
           });
         },
       }),
     [config],
   );
   useEffect(() => {
-    form.setValues(
-      Object.fromEntries(
-        Object.entries(config?.bindings || {}).map(([field, path]) => [
-          field,
-          node ? readPath(node, path) : undefined,
-        ]),
-      ),
-      'overwrite',
-    );
+    const values = clone(node?.['x-component-props'] || {});
+    Object.entries(config?.bindings || {}).forEach(([field, path]) => {
+      FormPath.setIn(values, field, node ? readPath(node, path) : undefined);
+    });
+    form.setValues({ ...values, ...node?.['x-config-values'] }, 'overwrite');
   }, [node, config, form]);
   if (!node) return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="点击画布中的组件进行配置" />;
   if (!config) return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="该组件暂无配置表单" />;
@@ -496,10 +487,13 @@ const LowCodeFormBuilderPage: React.FC<{ template?: TemplateBuilderProps }> = ({
               key={selected}
               node={selectedNode}
               config={config}
-              onChange={(path, value) =>
+              onChange={(path, value, values) =>
                 change((schema) => {
                   const node = nodeAt(schema, selected);
-                  if (node) writePath(node, path, value);
+                  if (node) {
+                    node['x-config-values'] = values;
+                    writePath(node, path, value);
+                  }
                 })
               }
             />

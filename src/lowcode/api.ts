@@ -7,6 +7,7 @@ export interface SchemaNode {
   'x-component'?: string;
   'x-decorator'?: string;
   'x-component-props'?: Record<string, unknown>;
+  'x-config-values'?: Record<string, unknown>;
 }
 export interface ComponentLock {
   kind?: 'field' | 'container';

@@ -127,7 +127,7 @@ export const LowCodeRenderer: React.FC<LowCodeRendererProps> = ({
   return (
     <EditorContext.Provider value={{ onSelect, selectedPath, onRemove, draggable, dropTarget }}>
       <MobileFormRenderer
-        key={editing ? 'editor' : 'preview'}
+        key={editing ? `editor:${JSON.stringify(schema)}` : 'preview'}
         ref={formRef}
         schema={renderSchema}
         componentsData={componentsData}

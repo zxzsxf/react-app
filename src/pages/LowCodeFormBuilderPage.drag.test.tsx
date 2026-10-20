@@ -9,12 +9,18 @@ jest.mock('react-router-dom', () => ({ useParams: () => ({}) }), { virtual: true
 jest.mock('../lowcode/api', () => ({ api: {} }));
 jest.mock('remote-component-loader', () => ({
   ReactRemoteComponent: ({ componentProps }: any) => (
-    <section>{componentProps.children || '组件内容'}</section>
+    <section data-placeholder={componentProps.placeholder}>
+      {componentProps.children || '组件内容'}
+    </section>
   ),
 }));
 
 test('phone drag events reorder components, move into custom containers and back out, and disable in preview', async () => {
   (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
+  Object.defineProperty(window, 'matchMedia', {
+    configurable: true,
+    value: () => ({ matches: false, addListener() {}, removeListener() {} }),
+  });
   const initial: Document = {
     id: 'template:drag',
     kind: 'template',
@@ -22,7 +28,17 @@ test('phone drag events reorder components, move into custom containers and back
     revision: 0,
     bindings: {},
     componentLocks: {
-      Input: { remoteName: 'input', version: '1', configVersion: 0, configSchema: { type: 'object' } },
+      Input: {
+        remoteName: 'input',
+        version: '1',
+        configVersion: 0,
+        configSchema: {
+          type: 'object',
+          properties: {
+            placeholder: { type: 'string', 'x-component': 'Input' },
+          },
+        },
+      },
       Content: { remoteName: 'content', version: '1', configVersion: 0, kind: 'container', configSchema: { type: 'object' } },
     },
     schema: {
@@ -69,6 +85,13 @@ test('phone drag events reorder components, move into custom containers and back
   try {
     await act(async () => root.render(<Wrapper />));
     expect(node('first').draggable).toBe(true);
+    await act(async () => Simulate.click(node('first')));
+    await act(async () => {
+      const input = host.querySelector<HTMLInputElement>('.lowcode-config input')!;
+      input.value = '手机实时提示';
+      Simulate.change(input);
+    });
+    expect(node('first').querySelector('section')!.dataset.placeholder).toBe('手机实时提示');
     await drag('first', node('last'), 0);
     expect(Object.keys(latest.schema.properties!)).toEqual(['box', 'last', 'first']);
     expect(Array.from(host.querySelectorAll('[data-lowcode-path]')).map((element) => element.getAttribute('data-lowcode-path'))).toEqual(['box', 'last', 'first']);
@@ -79,6 +102,8 @@ test('phone drag events reorder components, move into custom containers and back
     await drag('box.first', host.querySelector('.lowcode-phone-screen')!, 0);
     expect(latest.schema.properties!.first).toBeDefined();
     expect(node('first').classList.contains('is-selected')).toBe(true);
+    expect(node('first').querySelector('section')!.dataset.placeholder).toBe('手机实时提示');
+    expect(host.querySelector<HTMLInputElement>('.lowcode-config input')!.value).toBe('手机实时提示');
     await act(async () => Array.from(host.querySelectorAll('button')).find((button) => button.textContent?.includes('预览'))!.click());
     expect(host.querySelector('[data-lowcode-path]')).toBeNull();
     expect(host.querySelector('[draggable="true"]')).toBeNull();

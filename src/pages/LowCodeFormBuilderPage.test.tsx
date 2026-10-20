@@ -15,6 +15,7 @@ jest.mock('../lowcode/MobileRenderer', () => ({
         <div
           key={path}
           data-lowcode-path={path}
+          data-component-props={JSON.stringify(schema.properties[path]['x-component-props'])}
           className={selectedPath === path ? 'is-selected' : ''}
           onClick={() => onSelect(path)}
         >
@@ -53,6 +54,11 @@ test('embedded configuration renders and updates its bound property', async () =
           'x-component': 'Input',
           'x-component-props': { placeholder: '原提示' },
         },
+        other: {
+          type: 'string',
+          'x-component': 'Input',
+          'x-component-props': { placeholder: '另一个提示' },
+        },
       },
     },
     componentLocks: {
@@ -68,6 +74,18 @@ test('embedded configuration renders and updates its bound property', async () =
               title: '提示文案',
               'x-decorator': 'FormItem',
               'x-component': 'Input',
+            },
+            caption: {
+              type: 'string',
+              title: '附加文案',
+              'x-decorator': 'FormItem',
+              'x-component': 'Input',
+            },
+            disabled: {
+              type: 'boolean',
+              title: '禁用',
+              'x-decorator': 'FormItem',
+              'x-component': 'Switch',
             },
           },
         },
@@ -110,6 +128,46 @@ test('embedded configuration renders and updates its bound property', async () =
       latest.schema.properties!.name['x-component-props']!.placeholder,
     ).toBe('新提示');
     expect(latest.schema.properties!.name.title).toBe('姓名');
+    const caption = host.querySelectorAll('input')[1];
+    await act(async () => {
+      caption.value = '组件自己的文案';
+      Simulate.change(caption);
+    });
+    await act(async () => {
+      Simulate.click(host.querySelector('[role="switch"]')!);
+    });
+    expect(latest.schema.properties!.name['x-config-values']).toEqual({
+      placeholder: '原提示',
+      hint: '新提示',
+      caption: '组件自己的文案',
+      disabled: true,
+    });
+    expect(latest.schema.properties!.name['x-component-props']).toEqual({
+      placeholder: '新提示',
+      caption: '组件自己的文案',
+      disabled: true,
+    });
+    expect(JSON.parse(
+      host.querySelector('[data-lowcode-path="name"]')!.getAttribute('data-component-props')!,
+    )).toEqual(latest.schema.properties!.name['x-component-props']);
+
+    await act(async () => {
+      Simulate.click(host.querySelector('[data-lowcode-path="other"]')!);
+    });
+    expect(host.querySelector('input')!.value).toBe('另一个提示');
+    expect(host.querySelectorAll('input')[1].value).toBe('');
+    expect(host.querySelector('[role="switch"]')!.getAttribute('aria-checked')).toBe('false');
+
+    await act(async () => {
+      Simulate.click(host.querySelector('[data-lowcode-path="name"]')!);
+    });
+    expect(host.querySelector('input')!.value).toBe('新提示');
+    expect(host.querySelectorAll('input')[1].value).toBe('组件自己的文案');
+    expect(host.querySelector('[role="switch"]')!.getAttribute('aria-checked')).toBe('true');
+    await act(async () => {
+      Simulate.click(host.querySelector('[role="switch"]')!);
+    });
+    expect(latest.schema.properties!.name['x-component-props']!.disabled).toBe(false);
     expect(host.querySelector('.is-selected')).not.toBeNull();
     expect(host.textContent).not.toContain('未保存');
     expect(host.textContent).not.toContain('上移');
@@ -136,7 +194,7 @@ test('embedded configuration renders and updates its bound property', async () =
         .find((button) => button.textContent?.includes('删除组件'))!
         .click(),
     );
-    expect(latest.schema.properties).toEqual({});
+    expect(Object.keys(latest.schema.properties!)).toEqual(['other']);
     expect(host.textContent).toContain('点击画布中的组件进行配置');
   } finally {
     act(() => root.unmount());
