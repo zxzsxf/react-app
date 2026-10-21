@@ -38,13 +38,7 @@ const MainLayout: React.FC = () => {
         width={200} 
         collapsible
         collapsed={collapsed}
-        breakpoint={isAIChat ? 'lg' : undefined}
-        collapsedWidth={isAIChat ? 0 : 80}
-        onBreakpoint={(broken) => {
-          if (isAIChat) {
-            setCollapsed(broken);
-          }
-        }}
+        collapsedWidth={80}
         onCollapse={toggleCollapsed}
         style={{ 
           background: '#001529',
@@ -64,16 +58,18 @@ const MainLayout: React.FC = () => {
       />
         {user && <div style={{ padding: 12, color: 'white' }}><div>{user.username}</div><Button size="small" onClick={() => logout().then(() => navigate('/login'))}>退出登录</Button></div>}
       </Sider>
-      <Layout style={{ marginLeft: isAIChat ? 0 : collapsed ? 80 : 15, minWidth: 0, transition: 'all 0.2s' }}>
+      <Layout style={{ minWidth: 0 }}>
         <Content
           style={{
-            margin: isAIChat ? 12 : '24px 16px',
+            // margin: isAIChat ? 12 : '24px 16px',
             padding: isAIChat ? 16 : 24,
             background: '#fff',
             minHeight: 360,
           }}
         >
-          <Outlet />
+          <React.Suspense fallback={<div style={{ padding: 24 }}>加载页面中...</div>}>
+            <Outlet />
+          </React.Suspense>
         </Content>
       </Layout>
     </Layout>

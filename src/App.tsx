@@ -24,8 +24,8 @@ function App() {
     <ThemeProvider>
       <AuthProvider>
       <BrowserRouter>
-        <React.Suspense fallback={<div style={{ padding: 24 }}>加载页面中...</div>}>
         <Routes>
+          <Route path="/" element={<MainLayout />}>
           {/* 低代码平台登录 */}
           <Route path="/login" element={<LowCodeLoginPage />} />
           {/* 组件测试 */}
@@ -41,7 +41,6 @@ function App() {
           <Route path="/m/forms/:formCode" element={<RequireAuth roles={['M', 'B', 'C']}><MobileLowCodeFormPage /></RequireAuth>} />
           {/* 可填写表单 */}
           <Route path="/m/forms" element={<RequireAuth roles={['M', 'B', 'C']}><MobileFormCatalogPage /></RequireAuth>} />
-          <Route path="/" element={<MainLayout />}>
           
           {/* H5 表单 */}
           <Route path="schema" element={<SchemaPage />} />
@@ -63,7 +62,6 @@ function App() {
           <Route path="forms/*" element={<DynamicFormPage />} />
           </Route>
         </Routes>
-        </React.Suspense>
       </BrowserRouter>
       </AuthProvider>
     </ThemeProvider>
