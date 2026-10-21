@@ -3,6 +3,12 @@ import { Link } from 'react-router-dom';
 
 export const menuItems = [
     {
+      key: '/ai-chat',
+      roles: ['B'],
+      icon: <FormOutlined />,
+      label: <Link to="/ai-chat">AI 表单</Link>,
+    },
+    {
       key: '/test',
       icon: <ExperimentOutlined />,
       label: <Link to="/test">组件测试</Link>,

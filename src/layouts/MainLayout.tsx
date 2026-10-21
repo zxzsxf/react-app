@@ -16,12 +16,13 @@ interface MenuItemType {
 
 const MainLayout: React.FC = () => {
   const location = useLocation();
+  const isAIChat = location.pathname === '/ai-chat';
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
 
-  const toggleCollapsed = () => {
-    setCollapsed(!collapsed);
+  const toggleCollapsed = (next: boolean) => {
+    setCollapsed(next);
   };
 
   // 转换菜单项格式
@@ -37,6 +38,13 @@ const MainLayout: React.FC = () => {
         width={200} 
         collapsible
         collapsed={collapsed}
+        breakpoint={isAIChat ? 'lg' : undefined}
+        collapsedWidth={isAIChat ? 0 : 80}
+        onBreakpoint={(broken) => {
+          if (isAIChat) {
+            setCollapsed(broken);
+          }
+        }}
         onCollapse={toggleCollapsed}
         style={{ 
           background: '#001529',
@@ -56,11 +64,11 @@ const MainLayout: React.FC = () => {
       />
         {user && <div style={{ padding: 12, color: 'white' }}><div>{user.username}</div><Button size="small" onClick={() => logout().then(() => navigate('/login'))}>退出登录</Button></div>}
       </Sider>
-      <Layout style={{ marginLeft: collapsed ? 80 : 15, transition: 'all 0.2s' }}>
+      <Layout style={{ marginLeft: isAIChat ? 0 : collapsed ? 80 : 15, minWidth: 0, transition: 'all 0.2s' }}>
         <Content
           style={{
-            margin: '24px 16px',
-            padding: 24,
+            margin: isAIChat ? 12 : '24px 16px',
+            padding: isAIChat ? 16 : 24,
             background: '#fff',
             minHeight: 360,
           }}

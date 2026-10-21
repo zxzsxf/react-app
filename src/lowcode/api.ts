@@ -34,10 +34,20 @@ export interface ActiveComponentItem {
 }
 
 let csrf = '';
+export const lowcodeHeaders = (): Record<string, string> => csrf ? { 'x-lowcode-csrf': csrf } : {};
+export class ApiError extends Error {
+  constructor(message: string, public readonly status: number) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
+
 async function call<T>(path: string, method = 'GET', body?: unknown): Promise<T> {
   const response = await fetch(`/api/lowcode${path}`, { method, credentials: 'same-origin', headers: { ...(body === undefined ? {} : { 'Content-Type': 'application/json' }), ...(csrf ? { 'x-lowcode-csrf': csrf } : {}) }, body: body === undefined ? undefined : JSON.stringify(body) });
   const result = await response.json().catch(() => ({}));
-  if (!response.ok || result.code !== 0) throw new Error(result.msg || `请求失败 (${response.status})`);
+  if (!response.ok || result.code !== 0) {
+    throw new ApiError(result.msg || `请求失败 (${response.status})`, response.status);
+  }
   return result.data as T;
 }
 export const api = {
@@ -49,7 +59,7 @@ export const api = {
     const response = await fetch('/micro/config/active-components', { credentials: 'same-origin' });
     const result = await response.json();
     if (!response.ok || result.code !== 200) {
-      throw new Error(result.msg || `请求失败 (${response.status})`);
+      throw new ApiError(result.msg || `请求失败 (${response.status})`, response.status);
     }
     const components = result.data as Record<string, Omit<ActiveComponentItem, 'componentName'>>;
     return Object.entries(components).map(([componentName, component]) => ({

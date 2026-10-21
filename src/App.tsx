@@ -17,6 +17,7 @@ import MobileLowCodeFormPage from './pages/MobileLowCodeFormPage';
 import MobileFormCatalogPage from './pages/MobileFormCatalogPage';
 const LowCodeTemplateWizardPage = React.lazy(() => import('./pages/LowCodeTemplateWizardPage'));
 const LowCodeManageEditorPage = React.lazy(() => import('./pages/LowCodeManageEditorPage'));
+const AIChatPage = React.lazy(() => import('./pages/AIChatPage'));
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
           <Route path="schema" element={<SchemaPage />} />
           {/* 业务表单 */}
           <Route path="form-builder" element={<RequireAuth roles={['B']}><LowCodeFormManagerPage /></RequireAuth>} />
+          <Route path="ai-chat" element={<RequireAuth roles={['B']}><AIChatPage /></RequireAuth>} />
           {/* 表单搭建 */}
           <Route path="form-builder/:formCode" element={<RequireAuth roles={['B']}><LowCodeFormBuilderPage /></RequireAuth>} />
           {/* 旧版表单管理 */}

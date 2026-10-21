@@ -19,10 +19,17 @@ const LowCodeFormManagerPage: React.FC = () => {
       navigate(`/form-builder/${id}`);
     } catch (cause) { setError((cause as Error).message); }
   };
-  return <div><Typography.Title level={2}>业务表单</Typography.Title>{error && <Alert type="error" message={error} style={{ marginBottom: 12 }} />}
+  return (
+    <div>
+      <Typography.Title level={2}>业务表单</Typography.Title>
+      <Button onClick={() => navigate('/ai-chat')} style={{ marginBottom: 16 }}>
+        AI 创建
+      </Button>
+      {error && <Alert type="error" message={error} style={{ marginBottom: 12 }} />}
     <Space style={{ marginBottom: 20 }}><Input value={title} onChange={event => setTitle(event.target.value)} placeholder="表单名称" /><Select style={{ width: 250 }} value={templateId || undefined} placeholder="空白表单" allowClear onChange={value => setTemplateId(value || '')} options={templates.filter(item => item.publishedVersion).map(item => ({ label: `${item.title} v${item.publishedVersion}`, value: item.id.slice('template:'.length) }))} /><Button type="primary" onClick={create}>创建</Button></Space>
     <List bordered dataSource={forms} locale={{ emptyText: '暂无业务表单' }} renderItem={item => <List.Item actions={[<Link key="edit" to={`/form-builder/${item.id.slice('form:'.length)}`}>搭建</Link>, ...(item.publishedVersion ? [<Link key="view" to={`/m/forms/${item.id.slice('form:'.length)}`}>查看 C 端</Link>] : [])]}><Space><strong>{item.title}</strong><span>草稿 r{item.revision}</span><span>{item.publishedVersion ? `已发布 v${item.publishedVersion}` : '未发布'}</span></Space></List.Item>} />
     <div style={{ marginTop: 20 }}><Link to="/legacy-form-builder">查看旧版表单</Link></div>
-  </div>;
+    </div>
+  );
 };
 export default LowCodeFormManagerPage;
