@@ -39,6 +39,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "routes:generate": "node .agents/skills/frontend-navigation/scripts/route-map.cjs --write",
+    "routes:check": "node .agents/skills/frontend-navigation/scripts/route-map.cjs --check",
+    "routes:find": "node .agents/skills/frontend-navigation/scripts/route-map.cjs --url",
     "sync:lowcode": "node scripts/sync-lowcode-packages.cjs",
     "sync:flowform-pc": "node scripts/sync-flowform-pc.cjs",
     "build": "react-scripts build",

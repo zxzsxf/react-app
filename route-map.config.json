@@ -1,0 +1,7 @@
+{
+  "routeSource": "src/App.tsx",
+  "pageDirectories": ["src/pages"],
+  "output": "docs/frontend/route-map.json",
+  "notes": "docs/frontend/navigation-notes.md",
+  "router": "browser"
+}

@@ -32,6 +32,24 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
+### 页面路由映射
+
+路由与工程文件的映射保存在 [docs/frontend/route-map.json](docs/frontend/route-map.json)，配置见 [route-map.config.json](route-map.config.json)。路由结构从 `src/App.tsx` 提取，页面的 `title` 和 `description` 直接在映射中人工维护，重新生成时按路由 path 保留这两个字段。
+
+- `npm run routes:find -- "/ai-chat"`：只输出匹配路由的标题、说明、入口文件、布局及鉴权包装。也可传完整 URL，例如 `npm run routes:find -- "http://localhost:3000/form-builder/demo?mode=edit"`。支持动态参数、通配符和重定向；当前项目使用 BrowserRouter，query/hash 不参与路径匹配。
+- `npm run routes:generate`：刷新路由结构，保留相同 path 的人工文案，新增路由的文案留空，删除源码中已移除的路由条目。新增条目后直接在映射中补齐 title 和 description。普通样式和无关业务逻辑修改无需运行。
+- `npm run routes:check`：检查路由结构、组件文件和标题/说明完整性；过期映射、空白文案等问题会以非零状态退出。查询命令也会先进行这项检查。
+
+路由改名时，在修改源码后执行以下命令，把旧路径的文案迁移到新路径。必须在普通重新生成之前执行，否则旧条目会被移除；共用页面组件不会被自动视为同一路由。
+
+```bash
+npm run routes:generate -- --rename "/old-path" "/new-path"
+```
+
+每个 `--rename` 后跟两个完整路由模式（动态参数保留占位符），可重复指定以迁移多条路由。若已经重新生成，可从 Git diff 或修改前保存的内容恢复旧文案，直接填写到新条目；没有旧记录时需重新编写。
+
+完成相关修改后运行 `npm run routes:check`，将源码和映射一起提交。只修改文案时直接编辑 title/description 并校验，无需重新生成。特殊页面的实现转发和动态渲染说明见 [navigation-notes.md](docs/frontend/navigation-notes.md)。这些命令不启动前端、不访问服务端，也不修改浏览器标题；校验通过不代表页面运行正常或文案语义正确。
+
 ### `npm start`
 
 Runs the app in the development mode.

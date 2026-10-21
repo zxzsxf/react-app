@@ -1,0 +1,225 @@
+{
+  "version": 3,
+  "routeSource": "src/App.tsx",
+  "router": "browser",
+  "routes": [
+    {
+      "path": "/login",
+      "routeSource": "src/App.tsx",
+      "layouts": [
+        "src/layouts/MainLayout.tsx"
+      ],
+      "page": "src/pages/LowCodeLoginPage/index.tsx",
+      "component": "LowCodeLoginPage",
+      "title": "低代码平台登录",
+      "description": "使用账号密码登录低代码平台，成功后返回来源页面或进入可填写表单列表。"
+    },
+    {
+      "path": "/test",
+      "routeSource": "src/App.tsx",
+      "layouts": [
+        "src/layouts/MainLayout.tsx"
+      ],
+      "page": "src/pages/TestPage/index.tsx",
+      "component": "TestPage",
+      "title": "组件测试",
+      "description": "展示本地组件、已激活的远程组件和嵌入式业务表单，用于组件集成验证。"
+    },
+    {
+      "path": "/config",
+      "routeSource": "src/App.tsx",
+      "layouts": [
+        "src/layouts/MainLayout.tsx"
+      ],
+      "page": "src/pages/ConfigPage/index.tsx",
+      "component": "ConfigPage",
+      "title": "组件配置信息",
+      "description": "查看远程组件版本、发布信息、构建元数据和状态；当前页面隐藏发布操作。"
+    },
+    {
+      "path": "/theme",
+      "routeSource": "src/App.tsx",
+      "layouts": [
+        "src/layouts/MainLayout.tsx"
+      ],
+      "page": "src/pages/ThemePage/index.tsx",
+      "component": "ThemePage",
+      "title": "主题演示",
+      "description": "演示通过主题上下文修改主题主色并更新页面展示。"
+    },
+    {
+      "path": "/",
+      "routeSource": "src/App.tsx",
+      "layouts": [
+        "src/layouts/MainLayout.tsx"
+      ],
+      "redirect": "/test",
+      "title": "应用首页",
+      "description": "应用默认入口，自动重定向至 /test 组件测试页面。"
+    },
+    {
+      "path": "/m/forms/:formCode",
+      "routeSource": "src/App.tsx",
+      "layouts": [
+        "src/layouts/MainLayout.tsx"
+      ],
+      "page": "src/pages/MobileLowCodeFormPage/index.tsx",
+      "component": "MobileLowCodeFormPage",
+      "wrappers": [
+        "src/lowcode/Auth.tsx"
+      ],
+      "title": "移动表单填写",
+      "description": "根据 formCode 加载已发布表单快照，在移动端渲染、校验并提交数据；运行时标题来自表单快照。"
+    },
+    {
+      "path": "/m/forms",
+      "routeSource": "src/App.tsx",
+      "layouts": [
+        "src/layouts/MainLayout.tsx"
+      ],
+      "page": "src/pages/MobileFormCatalogPage/index.tsx",
+      "component": "MobileFormCatalogPage",
+      "wrappers": [
+        "src/lowcode/Auth.tsx"
+      ],
+      "title": "可填写表单",
+      "description": "列出当前可访问的已发布表单及版本，提供移动表单填写入口。"
+    },
+    {
+      "path": "/schema",
+      "routeSource": "src/App.tsx",
+      "layouts": [
+        "src/layouts/MainLayout.tsx"
+      ],
+      "page": "src/pages/SchemaPage/index.tsx",
+      "component": "SchemaPage",
+      "title": "H5 表单演示",
+      "description": "通过 SchemaForm 和预设 schema 展示 Formily 表单及自定义组件。"
+    },
+    {
+      "path": "/form-builder",
+      "routeSource": "src/App.tsx",
+      "layouts": [
+        "src/layouts/MainLayout.tsx"
+      ],
+      "page": "src/pages/LowCodeFormManagerPage/index.tsx",
+      "component": "LowCodeFormManagerPage",
+      "wrappers": [
+        "src/lowcode/Auth.tsx"
+      ],
+      "title": "业务表单",
+      "description": "创建业务表单、打开设计器，查看草稿与发布状态，并提供 AI 表单助手及已发布表单的填写入口。"
+    },
+    {
+      "path": "/ai-chat",
+      "routeSource": "src/App.tsx",
+      "layouts": [
+        "src/layouts/MainLayout.tsx"
+      ],
+      "page": "src/pages/AIChatPage/index.tsx",
+      "component": "AIChatPage",
+      "wrappers": [
+        "src/lowcode/Auth.tsx"
+      ],
+      "title": "AI 表单",
+      "description": "通过远程 AI 会话生成、预览和保存表单草稿；sessionId 查询参数选择会话。"
+    },
+    {
+      "path": "/form-builder/:formCode",
+      "routeSource": "src/App.tsx",
+      "layouts": [
+        "src/layouts/MainLayout.tsx"
+      ],
+      "page": "src/pages/LowCodeFormBuilderPage/index.tsx",
+      "component": "LowCodeFormBuilderPage",
+      "wrappers": [
+        "src/lowcode/Auth.tsx"
+      ],
+      "title": "业务表单设计器",
+      "description": "根据 formCode 编辑业务表单，使用组件库和属性面板搭建、预览及保存表单。"
+    },
+    {
+      "path": "/legacy-form-builder",
+      "routeSource": "src/App.tsx",
+      "layouts": [
+        "src/layouts/MainLayout.tsx"
+      ],
+      "page": "src/pages/FormManagerPage/index.tsx",
+      "component": "FormManagerPage",
+      "title": "旧版表单管理",
+      "description": "管理旧版独立路由表单，通过外部编辑器创建或编辑 /forms/ 下的表单页面。"
+    },
+    {
+      "path": "/manage/templates",
+      "routeSource": "src/App.tsx",
+      "layouts": [
+        "src/layouts/MainLayout.tsx"
+      ],
+      "page": "src/pages/LowCodeManagerPage/index.tsx",
+      "component": "LowCodeManagerPage",
+      "pageProps": {
+        "kind": "templates"
+      },
+      "wrappers": [
+        "src/lowcode/Auth.tsx"
+      ],
+      "title": "模板管理",
+      "description": "管理表单模板，支持创建模板草稿、打开配置向导及发布或取消发布模板。"
+    },
+    {
+      "path": "/manage/templates/:id",
+      "routeSource": "src/App.tsx",
+      "layouts": [
+        "src/layouts/MainLayout.tsx"
+      ],
+      "page": "src/pages/LowCodeTemplateWizardPage/index.tsx",
+      "component": "LowCodeTemplateWizardPage",
+      "wrappers": [
+        "src/lowcode/Auth.tsx"
+      ],
+      "title": "模板配置向导",
+      "description": "根据 id 配置模板信息、选择活跃组件及配置表单，并设计模板内容。"
+    },
+    {
+      "path": "/manage/component-configs",
+      "routeSource": "src/App.tsx",
+      "layouts": [
+        "src/layouts/MainLayout.tsx"
+      ],
+      "redirect": "/manage/templates",
+      "wrappers": [
+        "src/lowcode/Auth.tsx"
+      ],
+      "title": "组件配置管理旧入口",
+      "description": "保留的管理端入口，通过鉴权后重定向至 /manage/templates 模板管理页面。"
+    },
+    {
+      "path": "/manage/component-configs/:id",
+      "routeSource": "src/App.tsx",
+      "layouts": [
+        "src/layouts/MainLayout.tsx"
+      ],
+      "page": "src/pages/LowCodeManageEditorPage/index.tsx",
+      "component": "LowCodeManageEditorPage",
+      "pageProps": {
+        "kind": "component-configs"
+      },
+      "wrappers": [
+        "src/lowcode/Auth.tsx"
+      ],
+      "title": "组件配置表单设计",
+      "description": "根据 id 编辑组件配置表单，使用管理端设计器配置并保存组件属性表单。"
+    },
+    {
+      "path": "/forms/*",
+      "routeSource": "src/App.tsx",
+      "layouts": [
+        "src/layouts/MainLayout.tsx"
+      ],
+      "page": "src/pages/DynamicFormPage/index.tsx",
+      "component": "DynamicFormPage",
+      "title": "动态业务表单",
+      "description": "按当前 pathname 查找服务端路由表单记录并渲染 schema；具体页面标题取自该表单记录。"
+    }
+  ]
+}
