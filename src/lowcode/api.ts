@@ -23,7 +23,7 @@ export interface ComponentLock {
 export interface Document {
   id: string; kind: 'form' | 'template' | 'config'; title: string; schema: SchemaNode;
   componentLocks: Record<string, ComponentLock>; bindings: Record<string, string>;
-  revision: number; publishedVersion?: number; updatedAt?: string; createdAt?: string; sourceTemplateId?: string; sourceTemplateVersion?: number;
+  revision: number; publishedVersion?: number | null; updatedAt?: string; createdAt?: string; sourceTemplateId?: string; sourceTemplateVersion?: number;
 }
 export interface Snapshot { id: string; title: string; version: number; schema: SchemaNode; componentLocks: Record<string, ComponentLock>; bindings: Record<string, string> }
 export interface ComponentItem { componentName: string; version: string; manifest: { schemaComponent: string; displayName: string; kind: 'field' | 'container'; defaultFieldSchema: SchemaNode; allowedProps: string[] } }
@@ -74,6 +74,7 @@ export const api = {
   save: (kind: 'forms' | 'templates' | 'component-configs', id: string, data: unknown) => call<Document>(`/${kind}/${encodeURIComponent(id)}`, 'PUT', data),
   publish: (kind: 'forms' | 'templates' | 'component-configs', id: string, revision: number) => call<{ version: number }>(`/${kind}/${encodeURIComponent(id)}/publish`, 'POST', { revision }),
   published: (kind: 'forms' | 'templates' | 'component-configs', id: string) => call<Snapshot>(`/${kind}/${encodeURIComponent(id)}/published`),
+  unpublishTemplate: (id: string, revision: number) => call<Document>(`/templates/${encodeURIComponent(id)}/unpublish`, 'POST', { revision }),
   versioned: (kind: 'templates' | 'component-configs', id: string, version: number) => call<Snapshot>(`/${kind}/${encodeURIComponent(id)}/versions/${version}`),
   submit: (id: string, publishVersion: number, values: Record<string, unknown>) => call<{ id: string; publishVersion: number }>(`/forms/${encodeURIComponent(id)}/submissions`, 'POST', { publishVersion, values }),
 };

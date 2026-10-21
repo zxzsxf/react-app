@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Button, Input, List, Select, Space, Typography } from 'antd';
+import { Alert, Button, Input, List, message, Select, Space, Tag, Typography } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import { api, ActiveComponentItem, Document } from '../../lowcode/api';
 import { storeTemplateDraft } from '../../lowcode/template-draft';
@@ -10,6 +10,7 @@ const LowCodeManagerPage: React.FC<{ kind: 'templates' | 'component-configs' }> 
   const [name, setName] = useState('');
   const [choice, setChoice] = useState('');
   const [error, setError] = useState('');
+  const [pendingIds, setPendingIds] = useState<string[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,6 +41,29 @@ const LowCodeManagerPage: React.FC<{ kind: 'templates' | 'component-configs' }> 
       setItems([document, ...items]);
     } catch (cause) {
       setError((cause as Error).message);
+    }
+  };
+
+  const changePublication = async (item: Document) => {
+    const id = item.id.slice(item.kind.length + 1);
+    setError('');
+    setPendingIds(current => [...current, item.id]);
+    try {
+      if (item.publishedVersion) {
+        const updated = await api.unpublishTemplate(id, item.revision);
+        setItems(current => current.map(entry => entry.id === item.id ? updated : entry));
+        message.success('取消发布成功');
+      } else {
+        const result = await api.publish('templates', id, item.revision);
+        setItems(current => current.map(entry => entry.id === item.id
+          ? { ...entry, publishedVersion: result.version }
+          : entry));
+        message.success('发布成功');
+      }
+    } catch (cause) {
+      setError((cause as Error).message);
+    } finally {
+      setPendingIds(current => current.filter(value => value !== item.id));
     }
   };
 
@@ -75,11 +99,23 @@ const LowCodeManagerPage: React.FC<{ kind: 'templates' | 'component-configs' }> 
             <Link key="edit" to={`/manage/${kind}/${encodeURIComponent(item.id.slice(item.kind.length + 1))}`}>
               编辑
             </Link>,
+            ...(kind === 'templates' ? [
+              <Button
+                key="publication"
+                type="link"
+                loading={pendingIds.includes(item.id)}
+                onClick={() => changePublication(item)}
+              >
+                {item.publishedVersion ? '取消发布' : '发布'}
+              </Button>,
+            ] : []),
           ]}>
             <Space>
               <strong>{item.title}</strong>
               <span>草稿 r{item.revision}</span>
-              <span>{item.publishedVersion ? `已发布 v${item.publishedVersion}` : '未发布'}</span>
+              <Tag color={item.publishedVersion ? 'green' : 'red'}>
+                {item.publishedVersion ? `已发布 v${item.publishedVersion}` : '未发布'}
+              </Tag>
             </Space>
           </List.Item>
         )}

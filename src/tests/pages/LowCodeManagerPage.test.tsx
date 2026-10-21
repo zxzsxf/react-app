@@ -13,7 +13,14 @@ jest.mock('react-router-dom', () => ({
   Link: ({ children }: any) => <span>{children}</span>,
 }), { virtual: true });
 jest.mock('../../lowcode/api', () => ({
-  api: { list: jest.fn(), activeComponents: jest.fn(), components: jest.fn(), create: jest.fn() },
+  api: {
+    list: jest.fn(),
+    activeComponents: jest.fn(),
+    components: jest.fn(),
+    create: jest.fn(),
+    publish: jest.fn(),
+    unpublishTemplate: jest.fn(),
+  },
 }));
 jest.mock('antd', () => ({
   ...jest.requireActual('antd'),
@@ -79,4 +86,33 @@ test('configuration choices use active components and hide versions while preser
   });
   await act(async () => host.querySelector('button')!.click());
   expect(api.create).toHaveBeenCalledWith('component-configs', expect.objectContaining({ id: 'input:1.2.0' }));
+});
+
+test('template publication updates its tag and action, and supports unpublishing', async () => {
+  const template = { id: 'template:example', kind: 'template', title: '测试模板', revision: 3, publishedVersion: null };
+  (api.list as jest.Mock).mockResolvedValue([template]);
+  (api.publish as jest.Mock).mockResolvedValue({ version: 2 });
+  (api.unpublishTemplate as jest.Mock).mockResolvedValue(template);
+  await act(async () => root.render(<LowCodeManagerPage kind="templates" />));
+  expect(host.querySelector('.ant-tag-red')?.textContent).toBe('未发布');
+  await act(async () => host.querySelector<HTMLButtonElement>('.ant-btn-link')!.click());
+  expect(api.publish).toHaveBeenCalledWith('templates', 'example', 3);
+  expect(host.querySelector('.ant-tag-green')?.textContent).toBe('已发布 v2');
+  expect(host.querySelector('.ant-btn-link')?.textContent).toBe('取消发布');
+  await act(async () => host.querySelector<HTMLButtonElement>('.ant-btn-link')!.click());
+  expect(api.unpublishTemplate).toHaveBeenCalledWith('example', 3);
+  expect(host.querySelector('.ant-tag-red')?.textContent).toBe('未发布');
+  expect(host.querySelector('.ant-btn-link')?.textContent).toBe('发布');
+});
+
+test('publication failure keeps the status and displays the error', async () => {
+  (api.list as jest.Mock).mockResolvedValue([
+    { id: 'template:example', kind: 'template', title: '测试模板', revision: 3, publishedVersion: 1 },
+  ]);
+  (api.unpublishTemplate as jest.Mock).mockRejectedValue(new Error('取消发布失败'));
+  await act(async () => root.render(<LowCodeManagerPage kind="templates" />));
+  await act(async () => host.querySelector<HTMLButtonElement>('.ant-btn-link')!.click());
+  expect(host.querySelector('.ant-alert-message')?.textContent).toBe('取消发布失败');
+  expect(host.querySelector('.ant-tag-green')?.textContent).toBe('已发布 v1');
+  expect(host.querySelector('.ant-btn-link')?.hasAttribute('disabled')).toBe(false);
 });
